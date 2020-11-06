@@ -1,7 +1,7 @@
 package fractalsd.main;
 
 import fractalsd.fractal.Fractal;
-import fractalsd.fractal.GenFractal;
+import fractalsd.fractal.engine.GenFractal;
 import fractalsd.fractal.models.Index;
 
 import javax.swing.*;
@@ -9,7 +9,6 @@ import java.awt.event.*;
 import java.awt.geom.Point2D;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.util.List;
 
 public class GUIMain {
     private JPanel mainPanel;
@@ -22,36 +21,45 @@ public class GUIMain {
     private JTextField iterTextField;
     private JProgressBar progressBar;
 
-    Point2D center;
-    double windowSize;
-    int iteration;
-    int pictureSize;
+    private Point2D center;
+    private double windowSize;
+    private int iteration;
+    private int pictureSizeX;
+    private int pictureSizeY;
 
     public GUIMain() {
         genFractalBt.addActionListener(e -> {
-            //fractal center
-            center = new Point2D.Double(-0.5, 0);
             //fractal window size
-            windowSize = Integer.parseInt(zoomTextField.getText());
+            windowSize = Double.parseDouble(zoomTextField.getText());
             //fractal iterations
             iteration = Integer.parseInt(iterTextField.getText());
             //image w and h in pixels
-            pictureSize = 700;
+            pictureSizeX = 1280;
+            pictureSizeY = 720;
+            //fractal center
+            center = new Point2D.Double(-2.3, 0);
 
             // TODO: Parallelize this with Swing
-            BigCalculus bc = new BigCalculus(progressBar);
-            bc.execute();
+            //BigCalculus bc = new BigCalculus(progressBar);
+            //bc.execute();
+
+            GenFractal fr = new GenFractal(center, windowSize, iteration, pictureSizeX, pictureSizeY, (Fractal) fractalsCombo.getSelectedItem(), fractalLabel);
+            fr.start();
         });
         fractalLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                center = getRealCoordinates(e.getX(), e.getY(), pictureSize);
-                windowSize = Double.parseDouble(zoomTextField.getText()) / 4;
-
-                GenFractal fr =
-                        new GenFractal(center, windowSize, iteration, pictureSize, (Fractal) fractalsCombo.getSelectedItem());
-                fractalLabel.setIcon(fr.getFractalImage().getIcon());
+                if(e.getButton() == MouseEvent.BUTTON1) {
+                    center = getRealCoordinates(e.getX(), e.getY(), pictureSizeY);
+                    windowSize = Double.parseDouble(zoomTextField.getText()) / 4;
+                }
+                else if(e.getButton() == MouseEvent.BUTTON3) {
+                    center = getRealCoordinates(e.getX(), e.getY(), pictureSizeY);
+                    windowSize = Double.parseDouble(zoomTextField.getText()) / 4;
+                }
+                GenFractal fr = new GenFractal(center, windowSize, iteration, pictureSizeX, pictureSizeY, (Fractal) fractalsCombo.getSelectedItem(), fractalLabel);
+                fr.start();
 
                 zoomTextField.setText("" + windowSize);
             }
@@ -62,7 +70,7 @@ public class GUIMain {
             public void mouseMoved(MouseEvent e) {
                 super.mouseMoved(e);
                 df.setRoundingMode(RoundingMode.CEILING);
-                Point2D mouseRealCoord = getRealCoordinates(e.getX(), e.getY(), pictureSize);
+                Point2D mouseRealCoord = getRealCoordinates(e.getX(), e.getY(), pictureSizeY);
                 coordsLabel.setText("x: " + df.format(mouseRealCoord.getX()) + " y: " + df.format(mouseRealCoord.getY()));
                 try {
                     Thread.sleep(30);
@@ -120,14 +128,14 @@ public class GUIMain {
         protected Double doInBackground() {
             progressBar.setVisible(true);
 
-            fr = new GenFractal(center, windowSize, iteration, pictureSize, (Fractal) fractalsCombo.getSelectedItem());
+            //fr = new GenFractal(center, windowSize, iteration, pictureSizeX, pictureSizeY, (Fractal) fractalsCombo.getSelectedItem());
 
             return (double)0;
         }
 
         public void done(){
             progressBar.setVisible(false);
-            fractalLabel.setIcon(fr.getFractalImage().getIcon());
+            //fractalLabel.setIcon(fr.getFractalImage().getIcon());
         }
     }
 }
