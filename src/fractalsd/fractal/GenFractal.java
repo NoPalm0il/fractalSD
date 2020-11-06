@@ -1,40 +1,42 @@
 package fractalsd.fractal;
 
-import fractalsd.fractal.models.Mandelbrot;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 
-public class GenFractal implements Runnable {
+public class GenFractal extends Thread{
+    int ini;
+    int fin;
+    Point2D center;
+    double windowSize;
+    int iteration;
+    int size;
 
-    private Fractal fractal;
-    public JLabel label;
-    private Point2D center;
-    private double windowSize;
-    private int iteration;
-    private int size;
+    BufferedImage imgbuffer;
+    Fractal fractal;
 
-    public GenFractal(Fractal fractal, JLabel label, Point2D center, double windowSize, int iteration, int size) {
-        this.fractal = fractal;
-        this.label = label;
+    private GenFractal(int ini, int fin, Point2D center, double windowSize, int iteration, int size, BufferedImage imgbuffer, Fractal fractal) {
+        this.ini = ini;
+        this.fin = fin;
         this.center = center;
         this.windowSize = windowSize;
         this.iteration = iteration;
         this.size = size;
+        this.imgbuffer = imgbuffer;
+        this.fractal = fractal;
     }
 
-    @Override
-    public void run() {
-        label.setIcon(getFractalImage().getIcon());
+    public GenFractal(Point2D center, double windowSize, int iteration, int size, Fractal fractal) {
+        this.center = center;
+        this.windowSize = windowSize;
+        this.iteration = iteration;
+        this.size = size;
+        this.fractal = fractal;
     }
 
-    private JLabel getFractalImage() {
-        //criar a imagem com dimensão size x size do tipo RGB
-        BufferedImage picture = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
-        //calcular os pixeis da imagem
-        for (int x = 0; x < size; x++) {
+    public void run(){
+        for (int x = ini; x < fin; x++) {
             for (int y = 0; y < size; y++) {
                 //converter as coordenadas do pixel para o mundo fratal
                 double x0 = center.getX() - windowSize / 2 + windowSize * x / size;
@@ -42,9 +44,34 @@ public class GenFractal implements Runnable {
                 //calcular a cor
                 float color = fractal.color(x0, y0, iteration) / (float) iteration;
                 //pintar o pixel
-                picture.setRGB(x, size - 1 - y, Color.HSBtoRGB(1 - color, 1f, color));
+                imgbuffer.setRGB(x, size - 1 - y, Color.HSBtoRGB(1 - color, 1f, color));
             }
         }
+    }
+
+    public JLabel getFractalImage() {
+        BufferedImage picture = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
+
+        int nCores = Runtime.getRuntime().availableProcessors();
+        int dim = size / nCores;
+
+        GenFractal[] tdPool = new GenFractal[nCores];
+
+        for (int i = 0; i < tdPool.length; i++){
+            tdPool[i] = new GenFractal(i * dim, (i + 1) * dim, center, windowSize, iteration, size, picture, fractal);
+        }
+
+        for (GenFractal pf : tdPool){
+            pf.start();
+        }
+        try {
+            for (GenFractal pf : tdPool) {
+                pf.join();
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
         return new JLabel(new ImageIcon(picture));
     }
 }

@@ -3,15 +3,13 @@ package fractalsd.main;
 import fractalsd.fractal.Fractal;
 import fractalsd.fractal.GenFractal;
 import fractalsd.fractal.models.Index;
-import fractalsd.fractal.models.Mandelbrot;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Point2D;
-import java.awt.image.BufferedImage;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.util.List;
 
 public class GUIMain {
     private JPanel mainPanel;
@@ -19,8 +17,10 @@ public class GUIMain {
     private JLabel fractalLabel;
     private JButton genFractalBt;
     private JComboBox fractalsCombo;
-    private JLabel zoomLabel;
     private JLabel coordsLabel;
+    private JTextField zoomTextField;
+    private JTextField iterTextField;
+    private JProgressBar progressBar;
 
     Point2D center;
     double windowSize;
@@ -32,34 +32,35 @@ public class GUIMain {
             //fractal center
             center = new Point2D.Double(-0.5, 0);
             //fractal window size
-            windowSize = 5;
+            windowSize = Integer.parseInt(zoomTextField.getText());
             //fractal iterations
-            iteration = 1024;
+            iteration = Integer.parseInt(iterTextField.getText());
             //image w and h in pixels
-            pictureSize = 600;
+            pictureSize = 700;
 
-            //generate fractal icon on a separated thread
-            Thread td = new Thread(new GenFractal((Fractal) fractalsCombo.getSelectedItem(), fractalLabel,
-                    center, Double.parseDouble(zoomLabel.getText()), iteration, pictureSize));
-            td.start();
+            // TODO: Parallelize this with Swing
+            BigCalculus bc = new BigCalculus(progressBar);
+            bc.execute();
         });
         fractalLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 center = getRealCoordinates(e.getX(), e.getY(), pictureSize);
-                windowSize = Double.parseDouble(zoomLabel.getText()) / 4;
-                Thread td = new Thread(new GenFractal((Fractal) fractalsCombo.getSelectedItem(), fractalLabel,
-                        center, windowSize, iteration, pictureSize));
-                td.start();
-                zoomLabel.setText("" + windowSize);
+                windowSize = Double.parseDouble(zoomTextField.getText()) / 4;
+
+                GenFractal fr =
+                        new GenFractal(center, windowSize, iteration, pictureSize, (Fractal) fractalsCombo.getSelectedItem());
+                fractalLabel.setIcon(fr.getFractalImage().getIcon());
+
+                zoomTextField.setText("" + windowSize);
             }
         });
+        DecimalFormat df = new DecimalFormat("#.####");
         fractalLabel.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
                 super.mouseMoved(e);
-                DecimalFormat df = new DecimalFormat("#.####");
                 df.setRoundingMode(RoundingMode.CEILING);
                 Point2D mouseRealCoord = getRealCoordinates(e.getX(), e.getY(), pictureSize);
                 coordsLabel.setText("x: " + df.format(mouseRealCoord.getX()) + " y: " + df.format(mouseRealCoord.getY()));
@@ -70,32 +71,63 @@ public class GUIMain {
                 }
             }
         });
+        fractalsCombo.addItemListener(e -> {
+            zoomTextField.setText("5");
+            iterTextField.setText("1024");
+        });
     }
 
     private void createUIComponents() {
-        // TODO: place custom component creation code here
         fractalLabel = new JLabel();
-        zoomLabel = new JLabel();
         coordsLabel = new JLabel();
+        zoomTextField = new JTextField();
+        iterTextField = new JTextField();
+        progressBar = new JProgressBar();
 
         fractalsCombo = new JComboBox();
         Index idx = new Index();
         for (Fractal f : idx.fractals)
             fractalsCombo.addItem(f);
+
+        //progressBar.setVisible(false);
     }
 
     public JPanel getMainPanel() {
         return mainPanel;
     }
 
-    //metodo para obter as coordenadas reais a partir da jlabel fratal
+    // method to retrieve real coords from label
     public Point2D getRealCoordinates(double xx, double yy, int size) {
-        double ws = Double.parseDouble(zoomLabel.getText());
+        double ws = Double.parseDouble(zoomTextField.getText());
         double pixelSize = ws / size;
         double minX = center.getX() - ws / 2;
         double miny = center.getY() + ws / 2;
         double x = minX + pixelSize * xx;
         double y = miny - pixelSize * yy;
         return new Point2D.Double(x, y);
+    }
+
+    private class BigCalculus extends SwingWorker<Double, Integer> {
+        JProgressBar progressBar;
+        GenFractal fr;
+
+        public BigCalculus (JProgressBar progressBar){
+            this.progressBar = progressBar;
+        }
+
+        // TODO: doInBackground doesn't return a value, progress bar does not show progress
+        @Override
+        protected Double doInBackground() {
+            progressBar.setVisible(true);
+
+            fr = new GenFractal(center, windowSize, iteration, pictureSize, (Fractal) fractalsCombo.getSelectedItem());
+
+            return (double)0;
+        }
+
+        public void done(){
+            progressBar.setVisible(false);
+            fractalLabel.setIcon(fr.getFractalImage().getIcon());
+        }
     }
 }
