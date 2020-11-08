@@ -10,9 +10,9 @@ public class Index {
 
     //Edit me, default classes
     private Fractal[] defaultFractals = {
-            new BurningShip(),
+            new Mandelbrot(),
             new Julia(),
-            new Mandelbrot()
+            new BurningShip()
     };
 
     public Index() {

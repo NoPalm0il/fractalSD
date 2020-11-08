@@ -11,7 +11,6 @@ public class Main {
         frame.setContentPane(new GUIMain().getMainPanel());
         frame.setBounds(300, 40, 1500, 780);
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        //frame.pack();
         frame.setVisible(true);
     }
 }

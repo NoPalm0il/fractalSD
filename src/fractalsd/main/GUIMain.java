@@ -34,18 +34,20 @@ public class GUIMain {
             //fractal iterations
             iteration = Integer.parseInt(iterTextField.getText());
             //image w and h in pixels
-            pictureSizeX = 1280;
-            pictureSizeY = 720;
-            //fractal center
-            center = new Point2D.Double(-2.3, 0);
+            pictureSizeX = 400;
+            pictureSizeY = 400;
 
-            // TODO: Parallelize this with Swing
-            //BigCalculus bc = new BigCalculus(progressBar);
-            //bc.execute();
+            center = new Point2D.Double(0, 0);
+
+            // dynamic fractal center
+            center = getRealCoordinates(pictureSizeX / 2.0 / pictureSizeY, pictureSizeY / 2.0, pictureSizeY);
+
+            // TODO: Parallelize with SwingWorker
 
             GenFractal fr = new GenFractal(center, windowSize, iteration, pictureSizeX, pictureSizeY, (Fractal) fractalsCombo.getSelectedItem(), fractalLabel);
             fr.start();
         });
+
         fractalLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -58,12 +60,14 @@ public class GUIMain {
                     center = getRealCoordinates(e.getX(), e.getY(), pictureSizeY);
                     windowSize = Double.parseDouble(zoomTextField.getText()) / 4;
                 }
+
                 GenFractal fr = new GenFractal(center, windowSize, iteration, pictureSizeX, pictureSizeY, (Fractal) fractalsCombo.getSelectedItem(), fractalLabel);
                 fr.start();
 
                 zoomTextField.setText("" + windowSize);
             }
         });
+
         DecimalFormat df = new DecimalFormat("#.####");
         fractalLabel.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
@@ -79,6 +83,7 @@ public class GUIMain {
                 }
             }
         });
+
         fractalsCombo.addItemListener(e -> {
             zoomTextField.setText("5");
             iterTextField.setText("1024");
@@ -113,29 +118,5 @@ public class GUIMain {
         double x = minX + pixelSize * xx;
         double y = miny - pixelSize * yy;
         return new Point2D.Double(x, y);
-    }
-
-    private class BigCalculus extends SwingWorker<Double, Integer> {
-        JProgressBar progressBar;
-        GenFractal fr;
-
-        public BigCalculus (JProgressBar progressBar){
-            this.progressBar = progressBar;
-        }
-
-        // TODO: doInBackground doesn't return a value, progress bar does not show progress
-        @Override
-        protected Double doInBackground() {
-            progressBar.setVisible(true);
-
-            //fr = new GenFractal(center, windowSize, iteration, pictureSizeX, pictureSizeY, (Fractal) fractalsCombo.getSelectedItem());
-
-            return (double)0;
-        }
-
-        public void done(){
-            progressBar.setVisible(false);
-            //fractalLabel.setIcon(fr.getFractalImage().getIcon());
-        }
     }
 }

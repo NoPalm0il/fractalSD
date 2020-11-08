@@ -6,7 +6,7 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 
-public class FractalPixels extends Thread{
+public class FractalPixels extends Thread {
     int ini;
     int fin;
     Point2D center;
@@ -14,10 +14,10 @@ public class FractalPixels extends Thread{
     int iteration;
     int sizeX, sizeY;
 
-    BufferedImage imgbuffer;
+    BufferedImage imgBuffer;
     Fractal fractal;
 
-    public FractalPixels(int ini, int fin, Point2D center, double windowSize, int iteration, int sizeX, int sizeY, BufferedImage imgbuffer, Fractal fractal) {
+    public FractalPixels(int ini, int fin, Point2D center, double windowSize, int iteration, int sizeX, int sizeY, BufferedImage imgBuffer, Fractal fractal) {
         this.ini = ini;
         this.fin = fin;
         this.center = center;
@@ -25,7 +25,7 @@ public class FractalPixels extends Thread{
         this.iteration = iteration;
         this.sizeX = sizeX;
         this.sizeY = sizeY;
-        this.imgbuffer = imgbuffer;
+        this.imgBuffer = imgBuffer;
         this.fractal = fractal;
     }
 
@@ -33,13 +33,13 @@ public class FractalPixels extends Thread{
     public void run() {
         for (int x = ini; x < fin; x++) {
             for (int y = 0; y < sizeY; y++) {
-                //converter as coordenadas do pixel para o mundo fratal
+                // convert pixel coords to real world
                 double x0 = center.getX() - windowSize / 2 + windowSize * x / sizeY;
                 double y0 = center.getY() - windowSize / 2 + windowSize * y / sizeY;
-                //calcular a cor
+                // get color
                 float color = fractal.color(x0, y0, iteration) / (float) iteration;
-                //pintar o pixel
-                imgbuffer.setRGB(x, sizeY - 1 - y, Color.HSBtoRGB(1 - color, 1f, color));
+                // paint pixel
+                imgBuffer.setRGB(x, sizeY - 1 - y, Color.HSBtoRGB(1 - color, 1f, color));
             }
         }
     }
