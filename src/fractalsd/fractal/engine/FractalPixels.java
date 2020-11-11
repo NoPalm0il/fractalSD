@@ -13,11 +13,12 @@ public class FractalPixels extends Thread {
     double windowSize;
     int iteration;
     int sizeX, sizeY;
+    float color;
 
     BufferedImage imgBuffer;
     Fractal fractal;
 
-    public FractalPixels(int ini, int fin, Point2D center, double windowSize, int iteration, int sizeX, int sizeY, BufferedImage imgBuffer, Fractal fractal) {
+    public FractalPixels(int ini, int fin, Point2D center, double windowSize, int iteration, int sizeX, int sizeY, BufferedImage imgBuffer, Fractal fractal, float color) {
         this.ini = ini;
         this.fin = fin;
         this.center = center;
@@ -27,6 +28,7 @@ public class FractalPixels extends Thread {
         this.sizeY = sizeY;
         this.imgBuffer = imgBuffer;
         this.fractal = fractal;
+        this.color = color;
     }
 
     @Override
@@ -39,7 +41,7 @@ public class FractalPixels extends Thread {
                 // get color
                 float color = fractal.color(x0, y0, iteration) / (float) iteration;
                 // paint pixel
-                imgBuffer.setRGB(x, sizeY - 1 - y, Color.HSBtoRGB(1 - color, 1f, color));
+                imgBuffer.setRGB(x, sizeY - 1 - y, Color.HSBtoRGB(this.color - color, 1f, color));
             }
         }
     }

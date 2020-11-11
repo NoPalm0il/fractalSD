@@ -11,12 +11,13 @@ public class GenFractal extends Thread {
     double windowSize;
     int iteration;
     int sizeX, sizeY;
+    float color;
 
     BufferedImage picture;
     Fractal fractal;
     JLabel fractalIcon;
 
-    public GenFractal(Point2D center, double windowSize, int iteration, int sizeX, int sizeY, Fractal fractal, JLabel fractalIcon) {
+    public GenFractal(Point2D center, double windowSize, int iteration, int sizeX, int sizeY, Fractal fractal, JLabel fractalIcon, float color) {
         this.center = center;
         this.windowSize = windowSize;
         this.iteration = iteration;
@@ -24,6 +25,7 @@ public class GenFractal extends Thread {
         this.sizeY = sizeY;
         this.fractal = fractal;
         this.fractalIcon = fractalIcon;
+        this.color = color;
     }
 
     public void run() {
@@ -35,7 +37,7 @@ public class GenFractal extends Thread {
         FractalPixels[] tdPool = new FractalPixels[nCores];
 
         for (int i = 0; i < tdPool.length; i++) {
-            tdPool[i] = new FractalPixels(i * dim, (i + 1) * dim, center, windowSize, iteration, sizeX, sizeY, picture, fractal);
+            tdPool[i] = new FractalPixels(i * dim, (i + 1) * dim, center, windowSize, iteration, sizeX, sizeY, picture, fractal, color);
         }
 
         for (FractalPixels pf : tdPool) {
