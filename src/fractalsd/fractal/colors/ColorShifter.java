@@ -7,12 +7,10 @@ public class ColorShifter {
 
     private final int imgX, imgY;
     private final int[][] colorMap;
-    private BufferedImage image;
-    private final BufferedImage originalImage;
+    private final BufferedImage image;
     private float hueShift, saturationShift, brightnessShift;
 
     public ColorShifter(BufferedImage image) {
-        this.originalImage = image;
         this.image = image;
         this.imgX = image.getWidth();
         this.imgY = image.getHeight();
@@ -38,8 +36,6 @@ public class ColorShifter {
                 blue = new Color(colorMap[x][y]).getBlue();
 
                 float[] clHsb = Color.RGBtoHSB(red, green, blue, null);
-
-                image = originalImage;
 
                 image.setRGB(x, y, Color.HSBtoRGB(clHsb[0] + hueShift, clHsb[1] + saturationShift, clHsb[2] + brightnessShift));
             }
