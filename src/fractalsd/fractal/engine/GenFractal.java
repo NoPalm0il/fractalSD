@@ -16,8 +16,9 @@ public class GenFractal extends Thread {
     BufferedImage picture;
     Fractal fractal;
     JLabel fractalIcon;
+    JScrollPane fractalScroll;
 
-    public GenFractal(Point2D center, double windowSize, int iteration, int sizeX, int sizeY, Fractal fractal, JLabel fractalIcon, float color) {
+    public GenFractal(Point2D center, double windowSize, int iteration, int sizeX, int sizeY, Fractal fractal, JLabel fractalIcon, float color, JScrollPane fractalScroll) {
         this.center = center;
         this.windowSize = windowSize;
         this.iteration = iteration;
@@ -26,6 +27,7 @@ public class GenFractal extends Thread {
         this.fractal = fractal;
         this.fractalIcon = fractalIcon;
         this.color = color;
+        this.fractalScroll = fractalScroll;
     }
 
     public void run() {
@@ -52,5 +54,6 @@ public class GenFractal extends Thread {
         }
 
         fractalIcon.setIcon(new ImageIcon(picture));
+        fractalScroll.setViewportView(fractalIcon);
     }
 }

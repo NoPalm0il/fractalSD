@@ -5,6 +5,7 @@ import fractalsd.fractal.engine.GenFractal;
 import fractalsd.fractal.models.Index;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Point2D;
 import java.math.RoundingMode;
@@ -27,6 +28,11 @@ public class GUIMain {
     private JComboBox colorComboBox;
     private JPanel mainJPanel;
     private JPanel colorJPanel;
+    private JScrollPane fractalScroll;
+    private JTextField xTextField;
+    private JTextField yTextField;
+    private JTextField centerXtextField;
+    private JTextField centerYtextField;
 
     private Point2D center;
     private double windowSize;
@@ -42,17 +48,21 @@ public class GUIMain {
             iteration = Integer.parseInt(iterTextField.getText());
             //image w and h in pixels
             //resolution
-            pictureSizeX = 1280;
-            pictureSizeY = 720;
+            pictureSizeX = Integer.parseInt(xTextField.getText());
+            pictureSizeY = Integer.parseInt(yTextField.getText());
+            //pictureSizeX = 400;
+            //pictureSizeY = 400;
 
-            center = new Point2D.Double(0, 0);
+            center = new Point2D.Double(Double.parseDouble(centerXtextField.getText()), Double.parseDouble(centerYtextField.getText()));
+
+            //center = new Point2D.Double(0, 0);
 
             // dynamic fractal center
-            center = getRealCoordinates(pictureSizeX / 2.0 / pictureSizeY, pictureSizeY / 2.0, pictureSizeY);
+            center = getRealCoordinates(pictureSizeX / 1.0 / pictureSizeY / 2.0, pictureSizeY / 2.0, pictureSizeY);
 
             // TODO: Parallelize with SwingWorker
 
-            GenFractal fr = new GenFractal(center, windowSize, iteration, pictureSizeX, pictureSizeY, (Fractal) fractalsCombo.getSelectedItem(), fractalLabel, (float) colorComboBox.getSelectedItem());
+            GenFractal fr = new GenFractal(center, windowSize, iteration, pictureSizeX, pictureSizeY, (Fractal) fractalsCombo.getSelectedItem(), fractalLabel, (float) colorComboBox.getSelectedItem(), fractalScroll);
             fr.start();
         });
 
@@ -69,7 +79,7 @@ public class GUIMain {
                     windowSize = Double.parseDouble(zoomTextField.getText()) * 4;
                 }
 
-                GenFractal fr = new GenFractal(center, windowSize, iteration, pictureSizeX, pictureSizeY, (Fractal) fractalsCombo.getSelectedItem(), fractalLabel, (float) colorComboBox.getSelectedItem());
+                GenFractal fr = new GenFractal(center, windowSize, iteration, pictureSizeX, pictureSizeY, (Fractal) fractalsCombo.getSelectedItem(), fractalLabel, (float) colorComboBox.getSelectedItem(), fractalScroll);
                 fr.start();
 
                 zoomTextField.setText("" + windowSize);
@@ -95,6 +105,10 @@ public class GUIMain {
         fractalsCombo.addItemListener(e -> {
             zoomTextField.setText("5");
             iterTextField.setText("1024");
+            xTextField.setText("400");
+            yTextField.setText("400");
+            centerXtextField.setText("0");
+            centerYtextField.setText("0");
         });
     }
 
@@ -104,6 +118,7 @@ public class GUIMain {
         zoomTextField = new JTextField();
         iterTextField = new JTextField();
         progressBar = new JProgressBar();
+        fractalScroll = new JScrollPane();
 
         fractalsCombo = new JComboBox();
         Index idx = new Index();
