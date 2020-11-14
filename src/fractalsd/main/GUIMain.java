@@ -33,6 +33,9 @@ public class GUIMain {
     private JTextField yTextField;
     private JTextField centerXtextField;
     private JTextField centerYtextField;
+    private JButton resetBt;
+    private JPanel infoTabbedPanel;
+    private JTextArea infoTextArea;
 
     private Point2D center;
     private double windowSize;
@@ -41,6 +44,7 @@ public class GUIMain {
     private int pictureSizeY;
 
     public GUIMain() {
+        // botão para gerar um Fractal com os parâmetros presentes nos JTextFields
         genFractalBt.addActionListener(e -> {
             //fractal window size
             windowSize = Double.parseDouble(zoomTextField.getText());
@@ -60,7 +64,41 @@ public class GUIMain {
             // dynamic fractal center
             center = getRealCoordinates(pictureSizeX / 1.0 / pictureSizeY / 2.0, pictureSizeY / 2.0, pictureSizeY);
 
+            infoTextArea.setText("");
+            showInfo();
+
             // TODO: Parallelize with SwingWorker
+
+            GenFractal fr = new GenFractal(center, windowSize, iteration, pictureSizeX, pictureSizeY, (Fractal) fractalsCombo.getSelectedItem(), fractalLabel, (float) colorComboBox.getSelectedItem(), fractalScroll);
+            fr.start();
+        });
+
+        // botão de RESET para voltar aos parâmetros iniciais
+        resetBt.addActionListener(e -> {
+            //fractal window size
+            windowSize = Double.parseDouble("5");
+            //fractal iterations
+            iteration = Integer.parseInt("1024");
+            //image w and h in pixels
+            //resolution
+            pictureSizeX = 400;
+            pictureSizeY = 400;
+            center = new Point2D.Double(0, 0);
+
+            // dynamic fractal center
+            center = getRealCoordinates(pictureSizeX / 1.0 / pictureSizeY / 2.0, pictureSizeY / 2.0, pictureSizeY);
+
+            zoomTextField.setText("5");
+            iterTextField.setText("1024");
+            xTextField.setText("400");
+            yTextField.setText("400");
+            centerXtextField.setText("0");
+            centerYtextField.setText("0");
+
+            // TODO: Parallelize with SwingWorker
+
+            infoTextArea.setText("");
+            showInfo();
 
             GenFractal fr = new GenFractal(center, windowSize, iteration, pictureSizeX, pictureSizeY, (Fractal) fractalsCombo.getSelectedItem(), fractalLabel, (float) colorComboBox.getSelectedItem(), fractalScroll);
             fr.start();
@@ -78,6 +116,9 @@ public class GUIMain {
                     center = getRealCoordinates(e.getX(), e.getY(), pictureSizeY);
                     windowSize = Double.parseDouble(zoomTextField.getText()) * 4;
                 }
+
+                infoTextArea.setText("");
+                showInfo();
 
                 GenFractal fr = new GenFractal(center, windowSize, iteration, pictureSizeX, pictureSizeY, (Fractal) fractalsCombo.getSelectedItem(), fractalLabel, (float) colorComboBox.getSelectedItem(), fractalScroll);
                 fr.start();
@@ -110,6 +151,8 @@ public class GUIMain {
             centerXtextField.setText("0");
             centerYtextField.setText("0");
         });
+
+
     }
 
     private void createUIComponents() {
@@ -126,7 +169,7 @@ public class GUIMain {
             fractalsCombo.addItem(f);
 
         colorComboBox = new JComboBox();
-        ArrayList<Float> colors = new ArrayList();
+        ArrayList<Float> colors = new ArrayList<>();
         colors.add((float) 0.9);
         colors.add((float) 0.7);
         colors.add((float) 0.5);
@@ -138,6 +181,18 @@ public class GUIMain {
 
 
         //progressBar.setVisible(false);
+    }
+
+    private void showInfo() {
+        String info = "";
+
+        info += "Fractal Name: " +fractalsCombo.getSelectedItem();
+        info += "\n\nMax Iterations: " +iterTextField.getText();
+        info += "\nZoom: " +zoomTextField.getText();
+        info += "\n\nImage Width: " +xTextField.getText();
+        info += "\nImage Height: " +yTextField.getText();
+
+        infoTextArea.insert(info, 0);
     }
 
     public JPanel getMainPanel() {
