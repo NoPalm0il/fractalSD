@@ -2,6 +2,8 @@ package fractalsd.fractal.models;
 
 import fractalsd.fractal.Fractal;
 
+import java.math.BigDecimal;
+
 public class Julia extends Fractal {
     @Override
     public int color(double re, double im, int i) {
@@ -13,5 +15,10 @@ public class Julia extends Fractal {
             i--;
         }
         return i;
+    }
+
+    @Override
+    public int color(BigDecimal re, BigDecimal im, int i) {
+        return 0;
     }
 }

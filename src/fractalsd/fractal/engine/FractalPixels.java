@@ -1,10 +1,10 @@
 package fractalsd.fractal.engine;
 
 import fractalsd.fractal.Fractal;
-
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+
 
 public class FractalPixels extends Thread {
     int ini;
@@ -38,12 +38,14 @@ public class FractalPixels extends Thread {
         for (int x = ini; x < fin; x++) {
             for (int y = 0; y < sizeY; y++) {
                 // convert pixel coords to real world
+                //BigDecimal x0 = BigDecimal.valueOf(center.getX() - windowSize / 2 + windowSize * x / sizeY);
+                //BigDecimal y0 = BigDecimal.valueOf(center.getY() - windowSize / 2 + windowSize * y / sizeY);
                 double x0 = center.getX() - windowSize / 2 + windowSize * x / sizeY;
                 double y0 = center.getY() - windowSize / 2 + windowSize * y / sizeY;
                 // get color
                 float color = fractal.color(x0, y0, iteration) / (float) iteration;
                 // paint pixel
-                imgBuffer.setRGB(x, sizeY - 1 - y, Color.HSBtoRGB(hueShift - color, saturationShift, brightnessShift + color));
+                imgBuffer.setRGB(x, sizeY - 1 - y, Color.HSBtoRGB(1f - color, 1f, 0f + color));
             }
         }
     }

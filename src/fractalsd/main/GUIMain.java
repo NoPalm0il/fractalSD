@@ -126,7 +126,7 @@ public class GUIMain {
 
         fractalsCombo = new JComboBox();
         Index idx = new Index();
-        for (Fractal f : idx.fractals)
+        for (Object f : idx.fractals)
             fractalsCombo.addItem(f);
 
         //progressBar.setVisible(false);

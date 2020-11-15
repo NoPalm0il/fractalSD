@@ -68,7 +68,7 @@
               </grid>
             </constraints>
             <properties>
-              <text value="256"/>
+              <text value="128"/>
             </properties>
           </component>
           <component id="dae0a" class="javax.swing.JTextField" binding="zoomTextField" custom-create="true">
