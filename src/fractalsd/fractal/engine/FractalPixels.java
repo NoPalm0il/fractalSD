@@ -1,10 +1,10 @@
 package fractalsd.fractal.engine;
 
 import fractalsd.fractal.Fractal;
+
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-
 
 public class FractalPixels extends Thread {
     int ini;

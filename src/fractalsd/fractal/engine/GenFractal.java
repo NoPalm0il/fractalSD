@@ -28,6 +28,7 @@ public class GenFractal extends Thread {
         this.fractal = fractal;
         this.guiMain = guiMain;
         this.sliderHSB = sliderHSB;
+        // TODO: Get fractal scroll
     }
 
     public void run() {
@@ -53,6 +54,7 @@ public class GenFractal extends Thread {
             e.printStackTrace();
         }
 
+        // TODO: fractalScroll.setViewportView(fractalIcon);
         guiMain.getFractalLabel().setIcon(new ImageIcon(bufferedImage));
         guiMain.setFractalBufferedImage(bufferedImage);
         guiMain.setPl(new ColorShifter(bufferedImage));
