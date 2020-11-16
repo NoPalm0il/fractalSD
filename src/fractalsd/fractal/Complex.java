@@ -14,22 +14,6 @@ public class Complex {
         this.im = im;
     }
 
-    public double getIm() {
-        return im;
-    }
-
-    public void setIm(double im) {
-        this.im = im;
-    }
-
-    public double getRe() {
-        return re;
-    }
-
-    public void setRe(double re) {
-        this.re = re;
-    }
-
     public double modulus() {
         return Math.sqrt(this.re * re + this.im * im);
     }

@@ -53,7 +53,7 @@
             </constraints>
             <properties/>
           </component>
-          <component id="47825" class="javax.swing.JLabel" binding="coordsLabel" custom-create="true">
+          <component id="47825" class="javax.swing.JLabel" binding="cordsLabel" custom-create="true">
             <constraints>
               <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -68,7 +68,7 @@
               </grid>
             </constraints>
             <properties>
-              <text value="10000"/>
+              <text value="1000"/>
             </properties>
           </component>
           <component id="dae0a" class="javax.swing.JTextField" binding="zoomTextField" custom-create="true">

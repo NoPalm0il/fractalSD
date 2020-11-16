@@ -16,13 +16,13 @@ public class GUIMain {
     private JLabel fractalLabel;
     private JButton genFractalBt;
     private JComboBox fractalsCombo;
-    private JLabel coordsLabel;
+    private JLabel cordsLabel;
     private JTextField zoomTextField;
     private JTextField iterTextField;
     private JProgressBar progressBar;
 
     private Point2D center;
-    private double windowSize;
+    private double windowZoom;
     private int iteration;
     private int pictureSizeX;
     private int pictureSizeY;
@@ -30,41 +30,40 @@ public class GUIMain {
     public GUIMain() {
         genFractalBt.addActionListener(e -> {
             //fractal window size
-            windowSize = Double.parseDouble(zoomTextField.getText());
+            windowZoom = Double.parseDouble(zoomTextField.getText());
             //fractal iterations
             iteration = Integer.parseInt(iterTextField.getText());
             //image w and h in pixels
-            pictureSizeX = 400;
-            pictureSizeY = 400;
+            pictureSizeX = 1000;
+            pictureSizeY = 550;
 
             center = new Point2D.Double(0, 0);
 
             // dynamic fractal center
             center = getRealCoordinates(pictureSizeX / 2.0 / pictureSizeY, pictureSizeY / 2.0, pictureSizeY);
 
-            // TODO: Parallelize with SwingWorker
-
-            GenFractal fr = new GenFractal(center, windowSize, iteration, pictureSizeX, pictureSizeY, (Fractal) fractalsCombo.getSelectedItem(), fractalLabel);
-            fr.start();
+            GenFractal fr = new GenFractal(center, windowZoom, iteration, pictureSizeX, pictureSizeY,
+                    (Fractal) fractalsCombo.getSelectedItem(), fractalLabel, progressBar);
+            fr.execute();
         });
 
         fractalLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                if(e.getButton() == MouseEvent.BUTTON1) {
+                if (e.getButton() == MouseEvent.BUTTON1) {
                     center = getRealCoordinates(e.getX(), e.getY(), pictureSizeY);
-                    windowSize = Double.parseDouble(zoomTextField.getText()) / 4;
-                }
-                else if(e.getButton() == MouseEvent.BUTTON3) {
+                    windowZoom = Double.parseDouble(zoomTextField.getText()) / 4;
+                } else if (e.getButton() == MouseEvent.BUTTON3) {
                     center = getRealCoordinates(e.getX(), e.getY(), pictureSizeY);
-                    windowSize = Double.parseDouble(zoomTextField.getText()) / 4;
+                    windowZoom = Double.parseDouble(zoomTextField.getText()) / 4;
                 }
 
-                GenFractal fr = new GenFractal(center, windowSize, iteration, pictureSizeX, pictureSizeY, (Fractal) fractalsCombo.getSelectedItem(), fractalLabel);
-                fr.start();
+                GenFractal fr = new GenFractal(center, windowZoom, iteration, pictureSizeX, pictureSizeY,
+                        (Fractal) fractalsCombo.getSelectedItem(), fractalLabel, progressBar);
+                fr.execute();
 
-                zoomTextField.setText("" + windowSize);
+                zoomTextField.setText("" + windowZoom);
             }
         });
 
@@ -74,8 +73,8 @@ public class GUIMain {
             public void mouseMoved(MouseEvent e) {
                 super.mouseMoved(e);
                 df.setRoundingMode(RoundingMode.CEILING);
-                Point2D mouseRealCoord = getRealCoordinates(e.getX(), e.getY(), pictureSizeY);
-                coordsLabel.setText("x: " + df.format(mouseRealCoord.getX()) + " y: " + df.format(mouseRealCoord.getY()));
+                Point2D mouseRealCord = getRealCoordinates(e.getX(), e.getY(), pictureSizeY);
+                cordsLabel.setText("x: " + df.format(mouseRealCord.getX()) + " y: " + df.format(mouseRealCord.getY()));
                 try {
                     Thread.sleep(30);
                 } catch (InterruptedException interruptedException) {
@@ -92,7 +91,7 @@ public class GUIMain {
 
     private void createUIComponents() {
         fractalLabel = new JLabel();
-        coordsLabel = new JLabel();
+        cordsLabel = new JLabel();
         zoomTextField = new JTextField();
         iterTextField = new JTextField();
         progressBar = new JProgressBar();
@@ -109,7 +108,7 @@ public class GUIMain {
         return mainPanel;
     }
 
-    // method to retrieve real coords from label
+    // method to retrieve real cords from label
     public Point2D getRealCoordinates(double xx, double yy, int size) {
         double ws = Double.parseDouble(zoomTextField.getText());
         double pixelSize = ws / size;

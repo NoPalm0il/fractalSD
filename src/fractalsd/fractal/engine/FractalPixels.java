@@ -5,10 +5,9 @@ import fractalsd.fractal.Fractal;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class FractalPixels extends Thread {
-    int ini;
-    int fin;
     Point2D center;
     double windowSize;
     int iteration;
@@ -16,10 +15,9 @@ public class FractalPixels extends Thread {
 
     BufferedImage imgBuffer;
     Fractal fractal;
+    AtomicInteger ticket;
 
-    public FractalPixels(int ini, int fin, Point2D center, double windowSize, int iteration, int sizeX, int sizeY, BufferedImage imgBuffer, Fractal fractal) {
-        this.ini = ini;
-        this.fin = fin;
+    public FractalPixels(Point2D center, double windowSize, int iteration, int sizeX, int sizeY, BufferedImage imgBuffer, Fractal fractal, AtomicInteger ticket) {
         this.center = center;
         this.windowSize = windowSize;
         this.iteration = iteration;
@@ -27,13 +25,14 @@ public class FractalPixels extends Thread {
         this.sizeY = sizeY;
         this.imgBuffer = imgBuffer;
         this.fractal = fractal;
+        this.ticket = ticket;
     }
 
     @Override
     public void run() {
-        for (int x = ini; x < fin; x++) {
+        for (int x = ticket.get(); x < sizeX; x = ticket.getAndIncrement()) {
             for (int y = 0; y < sizeY; y++) {
-                // convert pixel coords to real world
+                // convert pixel cords to real world
                 double x0 = center.getX() - windowSize / 2 + windowSize * x / sizeY;
                 double y0 = center.getY() - windowSize / 2 + windowSize * y / sizeY;
                 // get color

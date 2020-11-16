@@ -9,7 +9,7 @@ public class Main {
     public static void main(String[] args) {
         JFrame frame = new JFrame("Fractal SD");
         frame.setContentPane(new GUIMain().getMainPanel());
-        frame.setBounds(300, 40, 1500, 780);
+        frame.setBounds(200, 40, 1200, 680);
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
