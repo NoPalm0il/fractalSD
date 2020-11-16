@@ -6,7 +6,6 @@ import fractalsd.fractal.engine.GenFractal;
 import fractalsd.fractal.models.Index;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
@@ -42,58 +41,52 @@ public class GUIMain {
     private JButton fullHDBt;
     private JButton hdBt;
     private JButton fourBt;
+    private JCheckBox bigDecCheckBox;
     private JSlider brightnessSlider;
     private JSlider saturationSlider;
     private JSlider hueSlider;
 
     private Point2D center;
-    private double windowSize;
+    private double zoomSize;
     private int iteration;
     private int pictureSizeX;
     private int pictureSizeY;
     private BufferedImage fractalBufferedImage;
-    ColorShifter pl;
-    GenFractal fr;
+    private ColorShifter pl;
+    private GenFractal fr;
 
     public GUIMain() {
         // botão para gerar um Fractal com os parâmetros presentes nos JTextFields
         genFractalBt.addActionListener(e -> {
+            // TODO: Center set text, string manipulation
             //fractal window size
-            windowSize = Double.parseDouble(zoomTextField.getText());
+            zoomSize = Double.parseDouble(zoomTextField.getText());
+            System.out.println(zoomSize);
             //fractal iterations
             iteration = Integer.parseInt(iterTextField.getText());
-            //image w and h in pixels
-            //resolution
+            // image w and h in pixels resolution
             pictureSizeX = Integer.parseInt(xTextField.getText());
             pictureSizeY = Integer.parseInt(yTextField.getText());
-            //pictureSizeX = 400;
-            //pictureSizeY = 400;
 
             center = new Point2D.Double(Double.parseDouble(centerXtextField.getText()), Double.parseDouble(centerYtextField.getText()));
 
-            //center = new Point2D.Double(0, 0);
-
             // dynamic fractal center
-            center = getRealCoordinates(pictureSizeX / 1.0 / pictureSizeY / 2.0, pictureSizeY / 2.0, pictureSizeY);
+            //center = getRealCoordinates(pictureSizeX / 1.0 / pictureSizeY / 2.0, pictureSizeY / 2.0, pictureSizeY);
 
             infoTextArea.setText("");
             showInfo();
 
-            // TODO: Parallelize with SwingWorker
-
-            //fr = new GenFractal(center, windowSize, iteration, pictureSizeX, pictureSizeY, (Fractal) fractalsCombo.getSelectedItem(), fractalLabel, (float) colorComboBox.getSelectedItem());
-            fr = new GenFractal(center, windowSize, iteration, pictureSizeX, pictureSizeY, (Fractal) fractalsCombo.getSelectedItem(), this, getSliderHSB());
+            fr = new GenFractal(this);
             fr.start();
         });
 
-        // botão de RESET para voltar aos parâmetros iniciais
+        // botao de RESET para voltar aos parametros iniciais
         resetBt.addActionListener(e -> {
-            //fractal window size
-            windowSize = Double.parseDouble("5");
-            //fractal iterations
+            // fractal window size
+            zoomSize = Double.parseDouble("5");
+            // fractal iterations
             iteration = Integer.parseInt("1024");
-            //image w and h in pixels
-            //resolution
+            // image w and h in pixels resolution
             pictureSizeX = 400;
             pictureSizeY = 400;
             center = new Point2D.Double(2, 0);
@@ -110,137 +103,43 @@ public class GUIMain {
 
             // TODO: Parallelize with SwingWorker
 
-            fr = new GenFractal(center, windowSize, iteration, pictureSizeX, pictureSizeY, (Fractal) fractalsCombo.getSelectedItem(), this, getSliderHSB());
+            fr = new GenFractal(this);
             infoTextArea.setText("");
             showInfo();
 
-            //fr = new GenFractal(center, windowSize, iteration, pictureSizeX, pictureSizeY, (Fractal) fractalsCombo.getSelectedItem(), fractalLabel, (float) colorComboBox.getSelectedItem());
-            fr = new GenFractal(center, windowSize, iteration, pictureSizeX, pictureSizeY, (Fractal) fractalsCombo.getSelectedItem(), this, getSliderHSB());
             fr.start();
         });
 
         // botão para a definição padrão "small"
         smallBt.addActionListener(e -> {
-            //fractal window size
-            windowSize = Double.parseDouble(zoomTextField.getText());
-            //fractal iterations
-            iteration = Integer.parseInt(iterTextField.getText());
-            //image w and h in pixels
-            //resolution
             xTextField.setText("200");
             yTextField.setText("200");
 
-            pictureSizeX = Integer.parseInt(xTextField.getText());
-            pictureSizeY = Integer.parseInt(yTextField.getText());
-
-
-            center = new Point2D.Double(Double.parseDouble(centerXtextField.getText()), Double.parseDouble(centerYtextField.getText()));
-
-            //center = new Point2D.Double(0, 0);
-
-            // dynamic fractal center
-            center = getRealCoordinates(pictureSizeX / 1.0 / pictureSizeY / 2.0, pictureSizeY / 2.0, pictureSizeY);
-
-            infoTextArea.setText("");
-            showInfo();
-
-            // TODO: Parallelize with SwingWorker
-
-            //GenFractal fr = new GenFractal(center, windowSize, iteration, pictureSizeX, pictureSizeY, (Fractal) fractalsCombo.getSelectedItem(), fractalLabel, (float) colorComboBox.getSelectedItem(), fractalScroll);
-            fr = new GenFractal(center, windowSize, iteration, pictureSizeX, pictureSizeY, (Fractal) fractalsCombo.getSelectedItem(), this, getSliderHSB());
-            fr.start();
+            genFractalBt.doClick();
         });
 
         // botão para a definição HD
         hdBt.addActionListener(e -> {
-            //fractal window size
-            windowSize = Double.parseDouble(zoomTextField.getText());
-            //fractal iterations
-            iteration = Integer.parseInt(iterTextField.getText());
-            //image w and h in pixels
-            //resolution
             xTextField.setText("1280");
             yTextField.setText("720");
 
-            pictureSizeX = Integer.parseInt(xTextField.getText());
-            pictureSizeY = Integer.parseInt(yTextField.getText());
-
-            center = new Point2D.Double(Double.parseDouble(centerXtextField.getText()), Double.parseDouble(centerYtextField.getText()));
-
-            //center = new Point2D.Double(0, 0);
-
-            // dynamic fractal center
-            center = getRealCoordinates(pictureSizeX / 1.0 / pictureSizeY / 2.0, pictureSizeY / 2.0, pictureSizeY);
-
-            infoTextArea.setText("");
-            showInfo();
-
-            // TODO: Parallelize with SwingWorker
-
-            //GenFractal fr = new GenFractal(center, windowSize, iteration, pictureSizeX, pictureSizeY, (Fractal) fractalsCombo.getSelectedItem(), fractalLabel, (float) colorComboBox.getSelectedItem(), fractalScroll);
-            fr = new GenFractal(center, windowSize, iteration, pictureSizeX, pictureSizeY, (Fractal) fractalsCombo.getSelectedItem(), this, getSliderHSB());
-            fr.start();
+            genFractalBt.doClick();
         });
 
         // botão para a definição FullHD
         fullHDBt.addActionListener(e -> {
-            //fractal window size
-            windowSize = Double.parseDouble(zoomTextField.getText());
-            //fractal iterations
-            iteration = Integer.parseInt(iterTextField.getText());
-            //image w and h in pixels
-            //resolution
             xTextField.setText("1920");
             yTextField.setText("1080");
 
-            pictureSizeX = Integer.parseInt(xTextField.getText());
-            pictureSizeY = Integer.parseInt(yTextField.getText());
-
-            center = new Point2D.Double(Double.parseDouble(centerXtextField.getText()), Double.parseDouble(centerYtextField.getText()));
-
-            //center = new Point2D.Double(0, 0);
-
-            // dynamic fractal center
-            center = getRealCoordinates(pictureSizeX / 1.0 / pictureSizeY / 2.0, pictureSizeY / 2.0, pictureSizeY);
-
-            infoTextArea.setText("");
-            showInfo();
-
-            // TODO: Parallelize with SwingWorker
-
-            //fr = new GenFractal(center, windowSize, iteration, pictureSizeX, pictureSizeY, (Fractal) fractalsCombo.getSelectedItem(), fractalLabel, (float) colorComboBox.getSelectedItem(), fractalScroll);
-            fr = new GenFractal(center, windowSize, iteration, pictureSizeX, pictureSizeY, (Fractal) fractalsCombo.getSelectedItem(), this, getSliderHSB());
-            fr.start();
+            genFractalBt.doClick();
         });
 
         // botão para a definição 4K
         fourBt.addActionListener(e -> {
-            //fractal window size
-            windowSize = Double.parseDouble(zoomTextField.getText());
-            //fractal iterations
-            iteration = Integer.parseInt(iterTextField.getText());
-            //image w and h in pixels
-            //resolution
             xTextField.setText("3840");
             yTextField.setText("2160");
 
-            pictureSizeX = Integer.parseInt(xTextField.getText());
-            pictureSizeY = Integer.parseInt(yTextField.getText());
-
-            center = new Point2D.Double(Double.parseDouble(centerXtextField.getText()), Double.parseDouble(centerYtextField.getText()));
-
-            //center = new Point2D.Double(0, 0);
-
-            // dynamic fractal center
-            center = getRealCoordinates(pictureSizeX / 1.0 / pictureSizeY / 2.0, pictureSizeY / 2.0, pictureSizeY);
-
-            infoTextArea.setText("");
-            showInfo();
-
-            // TODO: Parallelize with SwingWorker
-
-            fr = new GenFractal(center, windowSize, iteration, pictureSizeX, pictureSizeY, (Fractal) fractalsCombo.getSelectedItem(), this, getSliderHSB());
-            fr.start();
+            genFractalBt.doClick();
         });
 
         fractalLabel.addMouseListener(new MouseAdapter() {
@@ -248,20 +147,19 @@ public class GUIMain {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 if (e.getX() < pictureSizeX && e.getY() < pictureSizeY) {
-                    if (e.getButton() == MouseEvent.BUTTON1) {
-                        center = getRealCoordinates(e.getX(), e.getY(), pictureSizeY);
-                        windowSize = Double.parseDouble(zoomTextField.getText()) / 4;
-                    } else if (e.getButton() == MouseEvent.BUTTON3) {
-                        center = getRealCoordinates(e.getX(), e.getY(), pictureSizeY);
-                        windowSize = Double.parseDouble(zoomTextField.getText()) * 4;
-                    }
+                    center = getRealCoordinates(e.getX(), e.getY(), pictureSizeY);
+                    if (e.getButton() == MouseEvent.BUTTON1)
+                        zoomSize = Double.parseDouble(zoomTextField.getText()) / 4;
+                    else if (e.getButton() == MouseEvent.BUTTON3)
+                        zoomSize = Double.parseDouble(zoomTextField.getText()) * 4;
+
 
                     infoTextArea.setText("");
                     showInfo();
-                fr = new GenFractal(center, windowSize, iteration, pictureSizeX, pictureSizeY, (Fractal) fractalsCombo.getSelectedItem(), GUIMain.this, getSliderHSB());
-                fr.start();
+                    fr = new GenFractal(GUIMain.this);
+                    fr.start();
 
-                    zoomTextField.setText("" + windowSize);
+                    zoomTextField.setText("" + zoomSize);
                 }
             }
         });
@@ -293,26 +191,25 @@ public class GUIMain {
             centerXtextField.setText("2");
             centerYtextField.setText("0");
         });
-/*
+
         hueSlider.addChangeListener(evt -> {
-            if(fractalBufferedImage != null && pl != null) {
+            if (fractalBufferedImage != null && pl != null) {
                 pl.setHueShift(hueSlider.getValue() / 100f);
                 fractalLabel.setIcon(new ImageIcon(pl.genNewColorMap()));
             }
         });
         saturationSlider.addChangeListener(evt -> {
-            if(fractalBufferedImage != null && pl != null) {
+            if (fractalBufferedImage != null && pl != null) {
                 pl.setSaturationShift(saturationSlider.getValue() / 100f);
                 fractalLabel.setIcon(new ImageIcon(pl.genNewColorMap()));
             }
         });
         brightnessSlider.addChangeListener(evt -> {
-            if(fractalBufferedImage != null && pl != null) {
+            if (fractalBufferedImage != null && pl != null) {
                 pl.setBrightnessShift(brightnessSlider.getValue() / 100f);
                 fractalLabel.setIcon(new ImageIcon(pl.genNewColorMap()));
             }
         });
- */
     }
 
     private void createUIComponents() {
@@ -340,7 +237,6 @@ public class GUIMain {
         colors.add((float) 0.1);
         for (Float c : colors)
             colorComboBox.addItem(c);
-
 
         //progressBar.setVisible(false);
     }
@@ -371,9 +267,9 @@ public class GUIMain {
         double y = miny - pixelSize * yy;
         return new Point2D.Double(x, y);
     }
-    private float[] getSliderHSB(){
-        return new float[3];
-        //return new float[]{(float) hueSlider.getValue()/100, (float) saturationSlider.getValue()/100, (float) brightnessSlider.getValue()/100};
+
+    public float[] getSliderHSB() {
+        return new float[]{(float) hueSlider.getValue() / 100, (float) saturationSlider.getValue() / 100, (float) brightnessSlider.getValue() / 100};
     }
 
 
@@ -385,7 +281,71 @@ public class GUIMain {
         this.fractalBufferedImage = fractalBufferedImage;
     }
 
+    public Point2D getCenter() {
+        return center;
+    }
+
     public void setPl(ColorShifter pl) {
         this.pl = pl;
+    }
+
+    public JScrollPane getFractalScroll() {
+        return fractalScroll;
+    }
+
+    public double getZoomSize() {
+        return zoomSize;
+    }
+
+    public void setZoomSize(double zoomSize) {
+        this.zoomSize = zoomSize;
+    }
+
+    public int getIteration() {
+        return iteration;
+    }
+
+    public void setIteration(int iteration) {
+        this.iteration = iteration;
+    }
+
+    public int getPictureSizeX() {
+        return pictureSizeX;
+    }
+
+    public void setPictureSizeX(int pictureSizeX) {
+        this.pictureSizeX = pictureSizeX;
+    }
+
+    public int getPictureSizeY() {
+        return pictureSizeY;
+    }
+
+    public void setPictureSizeY(int pictureSizeY) {
+        this.pictureSizeY = pictureSizeY;
+    }
+
+    public BufferedImage getFractalBufferedImage() {
+        return fractalBufferedImage;
+    }
+
+    public ColorShifter getPl() {
+        return pl;
+    }
+
+    public GenFractal getFr() {
+        return fr;
+    }
+
+    public void setFr(GenFractal fr) {
+        this.fr = fr;
+    }
+
+    public JComboBox getFractalsCombo() {
+        return fractalsCombo;
+    }
+
+    public JCheckBox getBigDecCheckBox() {
+        return bigDecCheckBox;
     }
 }

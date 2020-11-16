@@ -9,7 +9,8 @@ public class Index {
         fractals = new Fractal[]{
                 new BurningShip(),
                 new Mandelbrot(),
-                new Julia()
+                new Julia(),
+                new Julia2()
         };
     }
 }

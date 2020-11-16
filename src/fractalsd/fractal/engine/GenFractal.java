@@ -9,30 +9,30 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 
 public class GenFractal extends Thread {
-    Point2D center;
-    double windowSize;
-    int iteration;
-    int sizeX, sizeY;
-    float[] sliderHSB;
+    private final Point2D center;
+    private final double zoomSize;
+    private final int iteration;
+    private final int sizeX, sizeY;
+    private final float[] sliderHSB;
+    private final boolean isBigDecimal;
 
-    BufferedImage bufferedImage;
-    Fractal fractal;
-    GUIMain guiMain;
+    private final Fractal fractal;
+    private final GUIMain guiMain;
 
-    public GenFractal(Point2D center, double windowSize, int iteration, int sizeX, int sizeY, Fractal fractal, GUIMain guiMain, float[] sliderHSB) {
-        this.center = center;
-        this.windowSize = windowSize;
-        this.iteration = iteration;
-        this.sizeX = sizeX;
-        this.sizeY = sizeY;
-        this.fractal = fractal;
+    public GenFractal(GUIMain guiMain) {
         this.guiMain = guiMain;
-        this.sliderHSB = sliderHSB;
-        // TODO: Get fractal scroll
+        this.center = guiMain.getCenter();
+        this.zoomSize = guiMain.getZoomSize();
+        this.iteration = guiMain.getIteration();
+        this.sizeX = guiMain.getPictureSizeX();
+        this.sizeY = guiMain.getPictureSizeY();
+        this.fractal = (Fractal) guiMain.getFractalsCombo().getSelectedItem();
+        this.sliderHSB = guiMain.getSliderHSB();
+        this.isBigDecimal = guiMain.getBigDecCheckBox().isSelected();
     }
 
     public void run() {
-        bufferedImage = new BufferedImage(sizeX, sizeY, BufferedImage.TYPE_INT_RGB);
+        BufferedImage bufferedImage = new BufferedImage(sizeX, sizeY, BufferedImage.TYPE_INT_RGB);
 
         int nCores = Runtime.getRuntime().availableProcessors();
         int dim = sizeX / nCores;
@@ -40,7 +40,7 @@ public class GenFractal extends Thread {
         FractalPixels[] tdPool = new FractalPixels[nCores];
 
         for (int i = 0; i < tdPool.length; i++) {
-            tdPool[i] = new FractalPixels(i * dim, (i + 1) * dim, center, windowSize, iteration, sizeX, sizeY, bufferedImage, fractal, sliderHSB);
+            tdPool[i] = new FractalPixels(i * dim, (i + 1) * dim, center, zoomSize, iteration, sizeY, bufferedImage, fractal, sliderHSB, isBigDecimal);
         }
 
         for (FractalPixels pf : tdPool) {
@@ -54,8 +54,8 @@ public class GenFractal extends Thread {
             e.printStackTrace();
         }
 
-        // TODO: fractalScroll.setViewportView(fractalIcon);
         guiMain.getFractalLabel().setIcon(new ImageIcon(bufferedImage));
+        guiMain.getFractalScroll().setViewportView(guiMain.getFractalLabel());
         guiMain.setFractalBufferedImage(bufferedImage);
         guiMain.setPl(new ColorShifter(bufferedImage));
     }
