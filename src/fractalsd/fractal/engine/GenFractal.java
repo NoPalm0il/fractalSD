@@ -1,6 +1,8 @@
 package fractalsd.fractal.engine;
 
 import fractalsd.fractal.Fractal;
+import fractalsd.fractal.colors.ColorShifter;
+import fractalsd.main.GUIMain;
 
 import javax.swing.*;
 import java.awt.geom.Point2D;
@@ -13,42 +15,32 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class GenFractal extends SwingWorker<BufferedImage, BufferedImage> {
-    Point2D center;
-    double windowZoom;
-    int iteration;
-    int sizeX, sizeY;
+    private final Point2D center;
+    private final double zoomSize;
+    private final int iteration;
+    private final int sizeX, sizeY;
+    private final float[] sliderHSB;
+    private final boolean isBigDecimal;
 
     BufferedImage picture;
-    Fractal fractal;
-    JLabel fractalIcon;
-    JProgressBar progressBar;
+    private final Fractal fractal;
+    private final GUIMain guiMain;
 
-    /**
-     * Executes all threads to generate the fractal, works with the class SwingWorker
-     *
-     * @param center      fractal center
-     * @param windowZoom  fractal zoom
-     * @param iteration   number of iterations per pixel
-     * @param sizeX       width
-     * @param sizeY       height
-     * @param fractal     type of Fractal
-     * @param fractalIcon receive JLabel to set the icon
-     * @param progressBar shows progress
-     */
-    public GenFractal(Point2D center, double windowZoom, int iteration, int sizeX, int sizeY, Fractal fractal, JLabel fractalIcon, JProgressBar progressBar) {
-        this.center = center;
-        this.windowZoom = windowZoom;
-        this.iteration = iteration;
-        this.sizeX = sizeX;
-        this.sizeY = sizeY;
-        this.fractal = fractal;
-        this.fractalIcon = fractalIcon;
-        this.progressBar = progressBar;
+    public GenFractal(GUIMain guiMain) {
+        this.guiMain = guiMain;
+        this.center = guiMain.getCenter();
+        this.zoomSize = guiMain.getZoomSize();
+        this.iteration = guiMain.getIteration();
+        this.sizeX = guiMain.getPictureSizeX();
+        this.sizeY = guiMain.getPictureSizeY();
+        this.fractal = (Fractal) guiMain.getFractalsCombo().getSelectedItem();
+        this.sliderHSB = guiMain.getSliderHSB();
+        this.isBigDecimal = guiMain.getBigDecCheckBox().isSelected();
     }
 
     @Override
     protected BufferedImage doInBackground() throws Exception {
-        progressBar.setVisible(true);
+        //progressBar.setVisible(true);
         picture = new BufferedImage(sizeX, sizeY, BufferedImage.TYPE_INT_RGB);
 
         int nCores = Runtime.getRuntime().availableProcessors();
@@ -72,8 +64,11 @@ public class GenFractal extends SwingWorker<BufferedImage, BufferedImage> {
 
     public void done() {
         try {
-            fractalIcon.setIcon(new ImageIcon(get()));
-            progressBar.setVisible(false);
+            guiMain.getFractalLabel().setIcon(new ImageIcon(bufferedImage));
+            guiMain.getFractalScroll().setViewportView(guiMain.getFractalLabel());
+            guiMain.setFractalBufferedImage(bufferedImage);
+            guiMain.setPl(new ColorShifter(bufferedImage));
+            //progressBar.setVisible(false);
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
