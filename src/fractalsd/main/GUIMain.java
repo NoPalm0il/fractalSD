@@ -194,7 +194,7 @@ public class GUIMain {
 
         fractalsCombo.addItemListener(e -> {
             zoomTextField.setText("5");
-            iterTextField.setText("1024");
+            iterTextField.setText("256");
             xTextField.setText("400");
             yTextField.setText("400");
             centerXtextField.setText("0");
@@ -235,17 +235,6 @@ public class GUIMain {
         for (Fractal f : idx.fractals)
             fractalsCombo.addItem(f);
 
-        colorComboBox = new JComboBox();
-        ArrayList<Float> colors = new ArrayList<>();
-        colors.add((float) 1);
-        colors.add((float) 0.9);
-        colors.add((float) 0.7);
-        colors.add((float) 0.5);
-        colors.add((float) 0.3);
-        colors.add((float) 0.1);
-        for (Float c : colors)
-            colorComboBox.addItem(c);
-
         //progressBar.setVisible(false);
     }
 
@@ -257,6 +246,9 @@ public class GUIMain {
         info += "\nZoom: " + zoomTextField.getText();
         info += "\n\nImage Width: " + xTextField.getText();
         info += "\nImage Height: " + yTextField.getText();
+        info += "\n\nHue Value: " +hueSlider.getValue();
+        info += "\nSaturation Value: " +saturationSlider.getValue();
+        info += "\nBrightness Value: " +brightnessSlider.getValue();
 
         infoTextArea.insert(info, 0);
     }
