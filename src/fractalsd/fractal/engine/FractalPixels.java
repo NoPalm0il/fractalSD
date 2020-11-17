@@ -9,6 +9,11 @@ import java.math.RoundingMode;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.math.BigDecimal;
 
+/**
+ * Esta classe serve apenas para gerar os pixeis e preencher a BufferedImage
+ * <p>
+ * Verifica se a boolean isBigDecimal está ativa, caso sim realiza os calculos em BigDecimal
+ */
 public class FractalPixels extends Thread {
     private final Point2D center;
     private final Object zoomSize;

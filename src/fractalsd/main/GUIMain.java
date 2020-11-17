@@ -14,6 +14,9 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
+/**
+ * Classe principal GUI
+ */
 public class GUIMain {
     private JPanel mainPanel;
     private JPanel fractalPanel;
@@ -59,7 +62,6 @@ public class GUIMain {
     public GUIMain() {
         // botão para gerar um Fractal com os parâmetros presentes nos JTextFields
         genFractalBt.addActionListener(e -> {
-            // TODO: Center set text, string manipulation
             //fractal window size
             if (bigDecCheckBox.isSelected())
                 zoomSize = new BigDecimal(zoomTextField.getText());
@@ -73,6 +75,9 @@ public class GUIMain {
             pictureSizeY = Integer.parseInt(yTextField.getText());
 
             center = new Point2D.Double(Double.parseDouble(centerXtextField.getText()), Double.parseDouble(centerYtextField.getText()));
+
+            if ((float) pictureSizeX / (float) pictureSizeY > 1.5f)
+                center = getRealCoordinates(pictureSizeX / 1.0 / pictureSizeY / 2.0, pictureSizeY / 2.0, pictureSizeY);
 
             infoTextArea.setText("");
             showInfo();
@@ -236,17 +241,7 @@ public class GUIMain {
             fractalsCombo.addItem(f);
 
         colorComboBox = new JComboBox();
-        ArrayList<Float> colors = new ArrayList<>();
-        colors.add((float) 1);
-        colors.add((float) 0.9);
-        colors.add((float) 0.7);
-        colors.add((float) 0.5);
-        colors.add((float) 0.3);
-        colors.add((float) 0.1);
-        for (Float c : colors)
-            colorComboBox.addItem(c);
-
-        //progressBar.setVisible(false);
+        progressBar.setVisible(false);
     }
 
     private void showInfo() {
@@ -324,5 +319,9 @@ public class GUIMain {
 
     public JCheckBox getBigDecCheckBox() {
         return bigDecCheckBox;
+    }
+
+    public JProgressBar getProgressBar() {
+        return progressBar;
     }
 }

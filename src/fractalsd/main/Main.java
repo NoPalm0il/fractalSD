@@ -4,6 +4,10 @@ import javax.swing.*;
 
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
+/**
+ * @author Tiago Murteira   21087
+ * @author João Ramos       21397
+ */
 public class Main {
 
     public static void main(String[] args) {

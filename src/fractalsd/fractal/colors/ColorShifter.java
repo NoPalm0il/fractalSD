@@ -3,6 +3,9 @@ package fractalsd.fractal.colors;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+/**
+ * Classe que recebe como parametro uma BufferedImage, define as shifts de cada valor HSB e altera os pixeis
+ */
 public class ColorShifter {
 
     private final int imgX, imgY;
