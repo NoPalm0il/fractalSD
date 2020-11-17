@@ -48,7 +48,7 @@ public class FractalPixels extends Thread {
                             .add(((BigDecimal) zoomSize).multiply(BigDecimal.valueOf(x)).setScale(20, RoundingMode.CEILING)
                                     .divide(BigDecimal.valueOf(sizeY), 20, RoundingMode.CEILING));
 
-                    BigDecimal y0 = BigDecimal.valueOf(center.getX())
+                    BigDecimal y0 = BigDecimal.valueOf(center.getY())
                             .subtract(((BigDecimal) zoomSize).setScale(20, RoundingMode.CEILING)
                                     .divide(new BigDecimal("2"), 20, RoundingMode.CEILING))
                             .add(((BigDecimal) zoomSize).multiply(BigDecimal.valueOf(y)).setScale(20, RoundingMode.CEILING)

@@ -150,11 +150,10 @@ public class GUIMain {
                 if (e.getX() < pictureSizeX && e.getY() < pictureSizeY) {
                     center = getRealCoordinates(e.getX(), e.getY(), pictureSizeY);
                     if (e.getButton() == MouseEvent.BUTTON1) {
-                        zoomSize = Double.parseDouble(zoomTextField.getText()) / 4;
                         if (bigDecCheckBox.isSelected())
-                            //zoomSize = new BigDecimal(zoomTextField.getText()).divide(new BigDecimal("4.0"), 20, RoundingMode.CEILING);
-                            zoomSize = BigDecimal.valueOf((double) zoomSize);
-
+                            zoomSize = new BigDecimal(zoomTextField.getText()).divide(new BigDecimal("4.0"), 20, RoundingMode.CEILING);
+                        else
+                            zoomSize = Double.parseDouble(zoomTextField.getText()) / 4;
                     } else if (e.getButton() == MouseEvent.BUTTON3) {
                         if (bigDecCheckBox.isSelected())
                             zoomSize = new BigDecimal(zoomTextField.getText())
@@ -198,7 +197,7 @@ public class GUIMain {
             iterTextField.setText("1024");
             xTextField.setText("400");
             yTextField.setText("400");
-            centerXtextField.setText("2");
+            centerXtextField.setText("0");
             centerYtextField.setText("0");
         });
 
