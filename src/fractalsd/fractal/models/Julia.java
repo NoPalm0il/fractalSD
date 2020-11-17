@@ -26,7 +26,7 @@ public class Julia extends Fractal {
     }
 
     @Override
-    public int color(BigDecimal re, BigDecimal im, int i) {
+    public int color(BigDecimal re, BigDecimal im, int i, int zoomSizeDecCount) {
         BigDecimal zr = re.setScale(20, RoundingMode.CEILING);
         BigDecimal zi = im.setScale(20, RoundingMode.CEILING);
         BigDecimal nz;

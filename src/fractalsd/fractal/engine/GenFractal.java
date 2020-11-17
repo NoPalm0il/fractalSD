@@ -23,6 +23,7 @@ public class GenFractal extends SwingWorker<BufferedImage, Integer> {
     private final int sizeX, sizeY;
     private final float[] sliderHSB;
     private final boolean isBigDecimal;
+    private final int zoomSizeDecCount;
 
     private BufferedImage bufferedImage;
     private final Fractal fractal;
@@ -38,6 +39,7 @@ public class GenFractal extends SwingWorker<BufferedImage, Integer> {
         this.fractal = (Fractal) guiMain.getFractalsCombo().getSelectedItem();
         this.sliderHSB = guiMain.getSliderHSB();
         this.isBigDecimal = guiMain.getBigDecCheckBox().isSelected();
+        this.zoomSizeDecCount = guiMain.getZoomSizeDecCount();
     }
 
     @Override
@@ -51,7 +53,7 @@ public class GenFractal extends SwingWorker<BufferedImage, Integer> {
         AtomicInteger ticket = new AtomicInteger();
 
         for (int i = 0; i < nCores; i++) {
-            exe.execute(new FractalPixels(center, zoomSize, iteration, sizeX, sizeY, bufferedImage, fractal, ticket, sliderHSB, isBigDecimal));
+            exe.execute(new FractalPixels(center, zoomSize, iteration, sizeX, sizeY, bufferedImage, fractal, ticket, sliderHSB, isBigDecimal, zoomSizeDecCount));
         }
 
         exe.shutdown();

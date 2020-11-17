@@ -3,6 +3,7 @@ package fractalsd.fractal.models;
 import fractalsd.fractal.Fractal;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 
 public class BurningShip extends Fractal {
@@ -23,16 +24,18 @@ public class BurningShip extends Fractal {
     }
 
     @Override
-    public int color(BigDecimal re, BigDecimal im, int i) {
-        BigDecimal zr = BigDecimal.ZERO.setScale(20, RoundingMode.CEILING), zi = BigDecimal.ZERO.setScale(20, RoundingMode.CEILING), nz;
+    public int color(BigDecimal re, BigDecimal im, int i, int zoomSizeDecCount) {
+        MathContext mc = new MathContext(zoomSizeDecCount, RoundingMode.CEILING);
+        BigDecimal zr = BigDecimal.ZERO.setScale(zoomSizeDecCount, RoundingMode.CEILING),
+                zi = BigDecimal.ZERO.setScale(zoomSizeDecCount, RoundingMode.CEILING), nz;
         while (i > 0) {
-            if (zr.multiply(zr).add(zi.multiply(zi)).compareTo(new BigDecimal("4.0")) > 0) {
+            if (zr.multiply(zr, mc).add(zi.multiply(zi, mc), mc).compareTo(new BigDecimal("4.0")) > 0) {
                 break;
             }
 
-            nz = zr.multiply(zr).subtract(zi.multiply(zi)).add(re).setScale(20, RoundingMode.CEILING);
-            zi = zi.multiply(zr).multiply(new BigDecimal("2.0")).abs().subtract(im).setScale(20, RoundingMode.CEILING);
-            zr = nz.abs();
+            nz = zr.multiply(zr, mc).subtract(zi.multiply(zi, mc), mc).add(re, mc);
+            zi = zi.multiply(zr, mc).multiply(new BigDecimal("2.0"), mc).abs(mc).subtract(im, mc);
+            zr = nz.abs(mc);
             i--;
         }
         return i;

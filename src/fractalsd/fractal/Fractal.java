@@ -8,7 +8,8 @@ import java.math.BigDecimal;
  */
 public abstract class Fractal {
     public abstract int color(double re, double im, int i);
-    public abstract int color(BigDecimal re, BigDecimal im, int i);
+
+    public abstract int color(BigDecimal re, BigDecimal im, int i, int zoomSizeDecCount);
 
     @Override
     public String toString() {
