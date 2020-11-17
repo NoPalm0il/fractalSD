@@ -23,7 +23,7 @@ public class Mandelbrot extends Fractal {
     }
 
     @Override
-    public int color(BigDecimal re, BigDecimal im, int i) {
+    public int color(BigDecimal re, BigDecimal im, int i, int zoomSizeDecCount) {
         return 0;
     }
 }

@@ -21,17 +21,17 @@ public class Julia extends Fractal {
     }
 
     @Override
-    public int color(BigDecimal re, BigDecimal im, int i) {
-        MathContext mc = new MathContext(20, RoundingMode.CEILING);
-        BigDecimal zr = re.setScale(20, RoundingMode.CEILING);
-        BigDecimal zi = im.setScale(20, RoundingMode.CEILING);
+    public int color(BigDecimal re, BigDecimal im, int i, int zoomSizeDecCount) {
+        MathContext mc = new MathContext(zoomSizeDecCount, RoundingMode.CEILING);
+        BigDecimal zr = re.setScale(zoomSizeDecCount, RoundingMode.CEILING);
+        BigDecimal zi = im.setScale(zoomSizeDecCount, RoundingMode.CEILING);
         BigDecimal nz;
 
 
-        while (i > 0 && zr.multiply(zr,mc).add(zi.multiply(zi,mc), mc).setScale(20, RoundingMode.CEILING).compareTo(new BigDecimal("4.0")) < 0) {
-            nz = zr.multiply(zr,mc).subtract(zi.multiply(zi,mc), mc).subtract(new BigDecimal("0.7"),mc).setScale(20, RoundingMode.CEILING);
-            zi = zr.multiply(zi,mc).multiply(new BigDecimal("2.0"),mc).add(new BigDecimal("0.27015"),mc).setScale(20, RoundingMode.CEILING);
-            zr = nz.setScale(20, RoundingMode.CEILING);
+        while (i > 0 && zr.multiply(zr,mc).add(zi.multiply(zi,mc), mc).setScale(zoomSizeDecCount, RoundingMode.CEILING).compareTo(new BigDecimal("4.0")) < 0) {
+            nz = zr.multiply(zr,mc).subtract(zi.multiply(zi,mc), mc).subtract(new BigDecimal("0.7"),mc).setScale(zoomSizeDecCount, RoundingMode.CEILING);
+            zi = zr.multiply(zi,mc).multiply(new BigDecimal("2.0"),mc).add(new BigDecimal("0.27015"),mc).setScale(zoomSizeDecCount, RoundingMode.CEILING);
+            zr = nz.setScale(zoomSizeDecCount, RoundingMode.CEILING);
             i--;
         }
         return i;

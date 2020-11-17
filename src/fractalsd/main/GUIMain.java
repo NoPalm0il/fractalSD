@@ -14,6 +14,9 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
+/**
+ * Classe principal GUI
+ */
 public class GUIMain {
     private JPanel mainPanel;
     private JPanel fractalPanel;
@@ -49,6 +52,7 @@ public class GUIMain {
 
     private Point2D center;
     private Object zoomSize;
+    private int zoomSizeDecCount;
     private int iteration;
     private int pictureSizeX;
     private int pictureSizeY;
@@ -59,13 +63,13 @@ public class GUIMain {
     public GUIMain() {
         // botão para gerar um Fractal com os parâmetros presentes nos JTextFields
         genFractalBt.addActionListener(e -> {
-            // TODO: Center set text, string manipulation
             //fractal window size
-            if (bigDecCheckBox.isSelected())
+            if (bigDecCheckBox.isSelected()) {
                 zoomSize = new BigDecimal(zoomTextField.getText());
-            else
+                zoomSizeDecCount = ((BigDecimal) zoomSize).scale();
+            } else
                 zoomSize = Double.parseDouble(zoomTextField.getText());
-            System.out.println(zoomSize);
+
             //fractal iterations
             iteration = Integer.parseInt(iterTextField.getText());
             // image w and h in pixels resolution
@@ -73,6 +77,9 @@ public class GUIMain {
             pictureSizeY = Integer.parseInt(yTextField.getText());
 
             center = new Point2D.Double(Double.parseDouble(centerXtextField.getText()), Double.parseDouble(centerYtextField.getText()));
+
+            if ((float) pictureSizeX / (float) pictureSizeY > 1.5f)
+                center = getRealCoordinates(pictureSizeX / 1.0 / pictureSizeY / 2.0, pictureSizeY / 2.0, pictureSizeY);
 
             infoTextArea.setText("");
             showInfo();
@@ -235,7 +242,7 @@ public class GUIMain {
         for (Fractal f : idx.fractals)
             fractalsCombo.addItem(f);
 
-        //progressBar.setVisible(false);
+        progressBar.setVisible(false);
     }
 
     private void showInfo() {
@@ -316,5 +323,13 @@ public class GUIMain {
 
     public JCheckBox getBigDecCheckBox() {
         return bigDecCheckBox;
+    }
+
+    public JProgressBar getProgressBar() {
+        return progressBar;
+    }
+
+    public int getZoomSizeDecCount() {
+        return zoomSizeDecCount;
     }
 }

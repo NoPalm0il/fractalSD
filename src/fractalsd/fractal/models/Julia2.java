@@ -20,12 +20,12 @@ public class Julia2 extends Fractal {
     }
 
     @Override
-    public int color(BigDecimal re, BigDecimal im, int i) {
-        BigDecimal zr = re.setScale(20, RoundingMode.CEILING), zi = im.setScale(20, RoundingMode.CEILING), nz;
+    public int color(BigDecimal re, BigDecimal im, int i, int zoomSizeDecCount) {
+        BigDecimal zr = re.setScale(zoomSizeDecCount, RoundingMode.CEILING), zi = im.setScale(zoomSizeDecCount, RoundingMode.CEILING), nz;
 
-        while (i > 0 && (zr.multiply(zr).add(zi.multiply(zi)).setScale(20, RoundingMode.CEILING).compareTo(new BigDecimal("16.0"))) < 0){
-            nz = zr.multiply(zr).subtract(zi.multiply(zi)).subtract(new BigDecimal("1.0")).setScale(20, RoundingMode.CEILING);
-            zi = zr.multiply(zi).multiply(new BigDecimal("3.1")).add(new BigDecimal("0.00087")).setScale(20, RoundingMode.CEILING);
+        while (i > 0 && (zr.multiply(zr).add(zi.multiply(zi)).setScale(zoomSizeDecCount, RoundingMode.CEILING).compareTo(new BigDecimal("16.0"))) < 0){
+            nz = zr.multiply(zr).subtract(zi.multiply(zi)).subtract(new BigDecimal("1.0")).setScale(zoomSizeDecCount, RoundingMode.CEILING);
+            zi = zr.multiply(zi).multiply(new BigDecimal("3.1")).add(new BigDecimal("0.00087")).setScale(zoomSizeDecCount, RoundingMode.CEILING);
             zr = nz;
             i--;
         }
