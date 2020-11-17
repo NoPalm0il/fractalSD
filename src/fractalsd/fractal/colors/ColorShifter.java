@@ -4,7 +4,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 /**
- * Classe que recebe como parametro uma BufferedImage, define as shifts de cada valor HSB e altera os pixeis
+ * Classe que recebe como parametro uma BufferedImage, define as shifts de cada valor HSB e altera os pixeis do Fratal
  */
 public class ColorShifter {
 

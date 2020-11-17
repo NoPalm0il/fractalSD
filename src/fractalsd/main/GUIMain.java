@@ -63,34 +63,39 @@ public class GUIMain {
     public GUIMain() {
         // botão para gerar um Fractal com os parâmetros presentes nos JTextFields
         genFractalBt.addActionListener(e -> {
-            //fractal window size
+            // verifica se a CheckBox de "BigDecimal" esta selecionada
+            // caso esteja, executa os calculos com os valores BigDecimal
             if (bigDecCheckBox.isSelected()) {
                 zoomSize = new BigDecimal(zoomTextField.getText());
                 zoomSizeDecCount = ((BigDecimal) zoomSize).scale();
             } else
                 zoomSize = Double.parseDouble(zoomTextField.getText());
 
-            //fractal iterations
+            // fractal iterations
             iteration = Integer.parseInt(iterTextField.getText());
-            // image w and h in pixels resolution
+            // altura e largura (height and width) da imagem
             pictureSizeX = Integer.parseInt(xTextField.getText());
             pictureSizeY = Integer.parseInt(yTextField.getText());
 
+            // centro com as informacoes dos textFields relativos ao mesmo
             center = new Point2D.Double(Double.parseDouble(centerXtextField.getText()), Double.parseDouble(centerYtextField.getText()));
+
 
             if ((float) pictureSizeX / (float) pictureSizeY > 1.5f)
                 center = getRealCoordinates(pictureSizeX / 1.0 / pictureSizeY / 2.0, pictureSizeY / 2.0, pictureSizeY);
 
+            // limpa a area de info para colocar as informacoes atualizadas
             infoTextArea.setText("");
             showInfo();
 
+            // gera o Fratal e executa
             fr = new GenFractal(this);
             fr.execute();
         });
 
         // botao de RESET para voltar aos parametros iniciais
         resetBt.addActionListener(e -> {
-            // fractal window size
+            // escolha dinamica para verificar se a checkBox do BigDecimal esta selecionada
             if (bigDecCheckBox.isSelected())
                 zoomSize = new BigDecimal("5.0");
             else
@@ -102,6 +107,8 @@ public class GUIMain {
             pictureSizeY = 400;
             center = new Point2D.Double(0, 0);
 
+            // colocar as informacoes dinamicamente nos textFields para quando for
+            // a geracao do Fractal, este poder ler as mesmas
             zoomTextField.setText("5");
             iterTextField.setText("256");
             xTextField.setText("400");
@@ -109,8 +116,11 @@ public class GUIMain {
             centerXtextField.setText("0");
             centerYtextField.setText("0");
 
+            // limpar a area de info e colocar as informacoes atualizadas
             infoTextArea.setText("");
             showInfo();
+
+            // gerar o "novo" Fractal
             fr = new GenFractal(this);
             fr.execute();
 
@@ -118,7 +128,7 @@ public class GUIMain {
             centerYtextField.setText("" + center.getY());
         });
 
-        // botão para a definição padrão "small"
+        // botão para a definição padrão "small" (200x200)
         smallBt.addActionListener(e -> {
             xTextField.setText("200");
             yTextField.setText("200");
@@ -126,7 +136,7 @@ public class GUIMain {
             genFractalBt.doClick();
         });
 
-        // botão para a definição HD
+        // botão para a definição HD (1280x720)
         hdBt.addActionListener(e -> {
             xTextField.setText("1280");
             yTextField.setText("720");
@@ -134,7 +144,7 @@ public class GUIMain {
             genFractalBt.doClick();
         });
 
-        // botão para a definição FullHD
+        // botão para a definição FullHD (1920x1080)
         fullHDBt.addActionListener(e -> {
             xTextField.setText("1920");
             yTextField.setText("1080");
@@ -142,7 +152,7 @@ public class GUIMain {
             genFractalBt.doClick();
         });
 
-        // botão para a definição 4K
+        // botão para a definição 4K (3840x2160)
         fourBt.addActionListener(e -> {
             xTextField.setText("3840");
             yTextField.setText("2160");
@@ -152,16 +162,21 @@ public class GUIMain {
 
         fractalLabel.addMouseListener(new MouseAdapter() {
             @Override
+            // evento para a ocorrencia de se ampliar a imagem com um clique na mesma
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
+                // limitador, para nao se clicar fora dos limites
                 if (e.getX() < pictureSizeX && e.getY() < pictureSizeY) {
                     center = getRealCoordinates(e.getX(), e.getY(), pictureSizeY);
+                    // resultado para o caso de se clicar no botao de ampliar a imagem
                     if (e.getButton() == MouseEvent.BUTTON1) {
                         if (bigDecCheckBox.isSelected())
                             zoomSize = new BigDecimal(zoomTextField.getText()).divide(new BigDecimal("4.0"), 20, RoundingMode.CEILING);
                         else
                             zoomSize = Double.parseDouble(zoomTextField.getText()) / 4;
-                    } else if (e.getButton() == MouseEvent.BUTTON3) {
+                    }
+                    // resultado para o caso de se clicar no botao para diminuir a imagem
+                    else if (e.getButton() == MouseEvent.BUTTON3) {
                         if (bigDecCheckBox.isSelected())
                             zoomSize = new BigDecimal(zoomTextField.getText())
                                     .multiply(new BigDecimal("4.0")).setScale(20, RoundingMode.CEILING);
@@ -183,6 +198,8 @@ public class GUIMain {
 
         DecimalFormat df = new DecimalFormat("#.####");
         df.setRoundingMode(RoundingMode.CEILING);
+
+        // evento para dar output das coordenadas do rato em tempo real
         fractalLabel.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
@@ -199,6 +216,7 @@ public class GUIMain {
             }
         });
 
+        // quando se seleciona um fractal do fractalsCombo, sao selecionadas e colocadas estas opcoes nos textFields
         fractalsCombo.addItemListener(e -> {
             zoomTextField.setText("5");
             iterTextField.setText("256");
@@ -208,18 +226,21 @@ public class GUIMain {
             centerYtextField.setText("0");
         });
 
+        // evento para quando se altera o "slider" do HUE
         hueSlider.addChangeListener(evt -> {
             if (fractalBufferedImage != null && pl != null) {
                 pl.setHueShift(hueSlider.getValue() / 100f);
                 fractalLabel.setIcon(new ImageIcon(pl.genNewColorMap()));
             }
         });
+        // evento para quando se altera o "slider" da SATURATION
         saturationSlider.addChangeListener(evt -> {
             if (fractalBufferedImage != null && pl != null) {
                 pl.setSaturationShift(saturationSlider.getValue() / 100f);
                 fractalLabel.setIcon(new ImageIcon(pl.genNewColorMap()));
             }
         });
+        // evento para quando se altera o "slider" da BRIGHTNESS
         brightnessSlider.addChangeListener(evt -> {
             if (fractalBufferedImage != null && pl != null) {
                 pl.setBrightnessShift(brightnessSlider.getValue() / 100f);
@@ -235,8 +256,10 @@ public class GUIMain {
         progressBar = new JProgressBar();
         fractalScroll = new JScrollPane();
 
+        // comando para alinhar a fractalLabel ao topo superior esquerdo
         fractalLabel.setVerticalAlignment(SwingConstants.NORTH);
 
+        // declaracao do combobox dos fractais
         fractalsCombo = new JComboBox();
         Index idx = new Index();
         for (Fractal f : idx.fractals)
@@ -245,7 +268,9 @@ public class GUIMain {
         progressBar.setVisible(false);
     }
 
+    // metodo para colocar os outputs das informacoes do Fratal
     private void showInfo() {
+        // cada vez que o metodo e executado, limpamos a string "info" para colocar novas informacoes
         String info = "";
 
         info += "Fractal Name: " + fractalsCombo.getSelectedItem();
@@ -257,14 +282,15 @@ public class GUIMain {
         info += "\nSaturation Value: " +saturationSlider.getValue();
         info += "\nBrightness Value: " +brightnessSlider.getValue();
 
+        // inserimos o valor da variavel "info" na area de "info"
         infoTextArea.insert(info, 0);
-    }
+     }
 
     public JPanel getMainPanel() {
         return mainPanel;
     }
 
-    // method to retrieve real cords from label
+    // metodo para receber as coordenadas reais a partir da label
     public Point2D getRealCoordinates(double xx, double yy, int size) {
         double ws = Double.parseDouble(zoomTextField.getText());
         double pixelSize = ws / size;
@@ -275,6 +301,7 @@ public class GUIMain {
         return new Point2D.Double(x, y);
     }
 
+    // metodo para obter os valores dos sliders de HSB
     public float[] getSliderHSB() {
         return new float[]{(float) hueSlider.getValue() / 100, (float) saturationSlider.getValue() / 100, (float) brightnessSlider.getValue() / 100};
     }

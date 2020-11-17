@@ -28,6 +28,7 @@ public class FractalPixels extends Thread {
     Fractal fractal;
     AtomicInteger ticket;
 
+    // construtor da classe
     public FractalPixels(Point2D center, Object zoomSize, int iteration, int sizeX, int sizeY, BufferedImage imgBuffer, Fractal fractal, AtomicInteger ticket, float[] getSliderHSB, boolean isBigDecimal, int zoomSizeDecCount) {
         this.isBigDecimal = isBigDecimal;
         this.center = center;
@@ -46,10 +47,12 @@ public class FractalPixels extends Thread {
 
     @Override
     public void run() {
+        // executa a condicao para verficar se o calculo vai ser feito com "doubles" ou "BigDecimals"
         if(isBigDecimal){
+            // processo de balanceamento com a ajuda dos AtomicInteger "ticket"
             for (int x = ticket.get(); x < sizeX; x = ticket.getAndIncrement()) {
                 for (int y = 0; y < sizeY; y++) {
-                    // convert pixel cords to real world
+                    // conversao das coordenadas dos pixeis para mundo real
                     BigDecimal x0 = BigDecimal.valueOf(center.getX())
                             .subtract(((BigDecimal) zoomSize).setScale(zoomSizeDecCount, RoundingMode.CEILING)
                                     .divide(new BigDecimal("2"), zoomSizeDecCount, RoundingMode.CEILING))
@@ -67,7 +70,9 @@ public class FractalPixels extends Thread {
                     imgBuffer.setRGB(x, sizeY - 1 - y, Color.HSBtoRGB(hueShift - color, saturationShift, brightnessShift + color));
                 }
             }
-        } else {
+        }
+        // caso o preocesso seja feito com valores double:
+        else {
             for (int x = ticket.get(); x < sizeX; x = ticket.getAndIncrement()) {
                 for (int y = 0; y < sizeY; y++) {
                     // convert pixel cords to real world
