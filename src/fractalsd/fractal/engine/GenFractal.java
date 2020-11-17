@@ -8,7 +8,6 @@ import javax.swing.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -16,13 +15,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class GenFractal extends SwingWorker<BufferedImage, BufferedImage> {
     private final Point2D center;
-    private final double zoomSize;
+    private final Object zoomSize;
     private final int iteration;
     private final int sizeX, sizeY;
     private final float[] sliderHSB;
     private final boolean isBigDecimal;
 
-    BufferedImage picture;
+    private BufferedImage bufferedImage;
     private final Fractal fractal;
     private final GUIMain guiMain;
 
@@ -41,7 +40,7 @@ public class GenFractal extends SwingWorker<BufferedImage, BufferedImage> {
     @Override
     protected BufferedImage doInBackground() throws Exception {
         //progressBar.setVisible(true);
-        picture = new BufferedImage(sizeX, sizeY, BufferedImage.TYPE_INT_RGB);
+        bufferedImage = new BufferedImage(sizeX, sizeY, BufferedImage.TYPE_INT_RGB);
 
         int nCores = Runtime.getRuntime().availableProcessors();
 
@@ -49,13 +48,13 @@ public class GenFractal extends SwingWorker<BufferedImage, BufferedImage> {
         AtomicInteger ticket = new AtomicInteger();
 
         for (int i = 0; i < nCores; i++) {
-            exe.execute(new FractalPixels(center, windowZoom, iteration, sizeX, sizeY, picture, fractal, ticket));
+            exe.execute(new FractalPixels(center, zoomSize, iteration, sizeX, sizeY, bufferedImage, fractal, ticket, sliderHSB, isBigDecimal));
         }
 
         exe.shutdown();
         exe.awaitTermination(1, TimeUnit.HOURS);
 
-        return picture;
+        return bufferedImage;
     }
 
     public void process(List<BufferedImage> chunks) {
@@ -63,14 +62,10 @@ public class GenFractal extends SwingWorker<BufferedImage, BufferedImage> {
     }
 
     public void done() {
-        try {
-            guiMain.getFractalLabel().setIcon(new ImageIcon(bufferedImage));
-            guiMain.getFractalScroll().setViewportView(guiMain.getFractalLabel());
-            guiMain.setFractalBufferedImage(bufferedImage);
-            guiMain.setPl(new ColorShifter(bufferedImage));
-            //progressBar.setVisible(false);
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
+        guiMain.getFractalLabel().setIcon(new ImageIcon(bufferedImage));
+        guiMain.getFractalScroll().setViewportView(guiMain.getFractalLabel());
+        guiMain.setFractalBufferedImage(bufferedImage);
+        guiMain.setPl(new ColorShifter(bufferedImage));
+        //progressBar.setVisible(false);
     }
 }

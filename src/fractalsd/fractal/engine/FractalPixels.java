@@ -5,12 +5,13 @@ import fractalsd.fractal.Fractal;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.math.RoundingMode;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.math.BigDecimal;
 
 public class FractalPixels extends Thread {
     private final Point2D center;
-    private final double zoomSize;
+    private final Object zoomSize;
     private final int iteration;
     private final int sizeX, sizeY;
     private final boolean isBigDecimal;
@@ -20,15 +21,8 @@ public class FractalPixels extends Thread {
     Fractal fractal;
     AtomicInteger ticket;
 
-    public FractalPixels(Point2D center, double zoomSize, int iteration, int sizeX, int sizeY, BufferedImage imgBuffer, Fractal fractal, AtomicInteger ticket, float[] getSliderHSB, boolean isBigDecimal) {
+    public FractalPixels(Point2D center, Object zoomSize, int iteration, int sizeX, int sizeY, BufferedImage imgBuffer, Fractal fractal, AtomicInteger ticket, float[] getSliderHSB, boolean isBigDecimal) {
         this.isBigDecimal = isBigDecimal;
-
-        /* TODO: this shit right here, if isBigDecimal is ticked than we need to make double to BigDec
-        if(isBigDecimal)
-            this.zoomSize = new BigDec();
-
-         */
-
         this.center = center;
         this.zoomSize = zoomSize;
         this.iteration = iteration;
@@ -48,8 +42,17 @@ public class FractalPixels extends Thread {
             for (int x = ticket.get(); x < sizeX; x = ticket.getAndIncrement()) {
                 for (int y = 0; y < sizeY; y++) {
                     // convert pixel cords to real world
-                    BigDecimal x0 = BigDecimal.valueOf(center.getX() - zoomSize / 2 + zoomSize * x / sizeY);
-                    BigDecimal y0 = BigDecimal.valueOf(center.getY() - zoomSize / 2 + zoomSize * y / sizeY);
+                    BigDecimal x0 = BigDecimal.valueOf(center.getX())
+                            .subtract(((BigDecimal) zoomSize).setScale(20, RoundingMode.CEILING)
+                                    .divide(new BigDecimal("2"), 20, RoundingMode.CEILING))
+                            .add(((BigDecimal) zoomSize).multiply(BigDecimal.valueOf(x)).setScale(20, RoundingMode.CEILING)
+                                    .divide(BigDecimal.valueOf(sizeY), 20, RoundingMode.CEILING));
+
+                    BigDecimal y0 = BigDecimal.valueOf(center.getX())
+                            .subtract(((BigDecimal) zoomSize).setScale(20, RoundingMode.CEILING)
+                                    .divide(new BigDecimal("2"), 20, RoundingMode.CEILING))
+                            .add(((BigDecimal) zoomSize).multiply(BigDecimal.valueOf(y)).setScale(20, RoundingMode.CEILING)
+                                    .divide(BigDecimal.valueOf(sizeY), 20, RoundingMode.CEILING));
                     // get color
                     float color = fractal.color(x0, y0, iteration) / (float) iteration;
                     // paint pixel
@@ -60,8 +63,8 @@ public class FractalPixels extends Thread {
             for (int x = ticket.get(); x < sizeX; x = ticket.getAndIncrement()) {
                 for (int y = 0; y < sizeY; y++) {
                     // convert pixel cords to real world
-                    double x0 = center.getX() - zoomSize / 2 + zoomSize * x / sizeY;
-                    double y0 = center.getY() - zoomSize / 2 + zoomSize * y / sizeY;
+                    double x0 = center.getX() - (double) zoomSize / 2 + (double) zoomSize * x / sizeY;
+                    double y0 = center.getY() - (double) zoomSize / 2 + (double) zoomSize * y / sizeY;
                     // get color
                     float color = fractal.color(x0, y0, iteration) / (float) iteration;
                     // paint pixel

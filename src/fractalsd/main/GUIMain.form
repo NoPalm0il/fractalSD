@@ -43,7 +43,7 @@
                       <text value="GENERATE"/>
                     </properties>
                   </component>
-                  <component id="47825" class="javax.swing.JLabel" binding="coordsLabel" custom-create="true">
+                  <component id="47825" class="javax.swing.JLabel" binding="cordsLabel">
                     <constraints>
                       <grid row="9" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
@@ -58,7 +58,7 @@
                       </grid>
                     </constraints>
                     <properties>
-                      <text value="1024"/>
+                      <text value="256"/>
                     </properties>
                   </component>
                   <component id="dae0a" class="javax.swing.JTextField" binding="zoomTextField" custom-create="true">
@@ -126,7 +126,7 @@
                   </grid>
                 </constraints>
                 <properties>
-                  <text value="2"/>
+                  <text value="0"/>
                 </properties>
               </component>
               <component id="acb3d" class="javax.swing.JTextField" binding="centerYtextField">
@@ -221,19 +221,25 @@
                     <constraints>
                       <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
-                    <properties/>
+                    <properties>
+                      <value value="100"/>
+                    </properties>
                   </component>
                   <component id="87adc" class="javax.swing.JSlider" binding="brightnessSlider">
                     <constraints>
                       <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
-                    <properties/>
+                    <properties>
+                      <value value="0"/>
+                    </properties>
                   </component>
                   <component id="f383f" class="javax.swing.JSlider" binding="saturationSlider">
                     <constraints>
                       <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
-                    <properties/>
+                    <properties>
+                      <value value="100"/>
+                    </properties>
                   </component>
                 </children>
               </grid>

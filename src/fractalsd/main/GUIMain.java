@@ -9,6 +9,7 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ public class GUIMain {
     private JSlider hueSlider;
 
     private Point2D center;
-    private double zoomSize;
+    private Object zoomSize;
     private int iteration;
     private int pictureSizeX;
     private int pictureSizeY;
@@ -60,7 +61,10 @@ public class GUIMain {
         genFractalBt.addActionListener(e -> {
             // TODO: Center set text, string manipulation
             //fractal window size
-            zoomSize = Double.parseDouble(zoomTextField.getText());
+            if (bigDecCheckBox.isSelected())
+                zoomSize = new BigDecimal(zoomTextField.getText());
+            else
+                zoomSize = Double.parseDouble(zoomTextField.getText());
             System.out.println(zoomSize);
             //fractal iterations
             iteration = Integer.parseInt(iterTextField.getText());
@@ -69,9 +73,6 @@ public class GUIMain {
             pictureSizeY = Integer.parseInt(yTextField.getText());
 
             center = new Point2D.Double(Double.parseDouble(centerXtextField.getText()), Double.parseDouble(centerYtextField.getText()));
-
-            // dynamic fractal center
-            //center = getRealCoordinates(pictureSizeX / 1.0 / pictureSizeY / 2.0, pictureSizeY / 2.0, pictureSizeY);
 
             infoTextArea.setText("");
             showInfo();
@@ -83,31 +84,31 @@ public class GUIMain {
         // botao de RESET para voltar aos parametros iniciais
         resetBt.addActionListener(e -> {
             // fractal window size
-            zoomSize = Double.parseDouble("5");
+            if (bigDecCheckBox.isSelected())
+                zoomSize = new BigDecimal("5.0");
+            else
+                zoomSize = 5.0;
             // fractal iterations
-            iteration = Integer.parseInt("1024");
+            iteration = 256;
             // image w and h in pixels resolution
             pictureSizeX = 400;
             pictureSizeY = 400;
-            center = new Point2D.Double(2, 0);
-
-            // dynamic fractal center
-            center = getRealCoordinates(pictureSizeX / 1.0 / pictureSizeY / 2.0, pictureSizeY / 2.0, pictureSizeY);
+            center = new Point2D.Double(0, 0);
 
             zoomTextField.setText("5");
-            iterTextField.setText("1024");
+            iterTextField.setText("256");
             xTextField.setText("400");
             yTextField.setText("400");
-            centerXtextField.setText("2");
+            centerXtextField.setText("0");
             centerYtextField.setText("0");
 
-            // TODO: Parallelize with SwingWorker
-
-            fr = new GenFractal(this);
             infoTextArea.setText("");
             showInfo();
-
+            fr = new GenFractal(this);
             fr.execute();
+
+            centerXtextField.setText("" + center.getX());
+            centerYtextField.setText("" + center.getY());
         });
 
         // botão para a definição padrão "small"
@@ -148,11 +149,19 @@ public class GUIMain {
                 super.mouseClicked(e);
                 if (e.getX() < pictureSizeX && e.getY() < pictureSizeY) {
                     center = getRealCoordinates(e.getX(), e.getY(), pictureSizeY);
-                    if (e.getButton() == MouseEvent.BUTTON1)
+                    if (e.getButton() == MouseEvent.BUTTON1) {
                         zoomSize = Double.parseDouble(zoomTextField.getText()) / 4;
-                    else if (e.getButton() == MouseEvent.BUTTON3)
-                        zoomSize = Double.parseDouble(zoomTextField.getText()) * 4;
+                        if (bigDecCheckBox.isSelected())
+                            //zoomSize = new BigDecimal(zoomTextField.getText()).divide(new BigDecimal("4.0"), 20, RoundingMode.CEILING);
+                            zoomSize = BigDecimal.valueOf((double) zoomSize);
 
+                    } else if (e.getButton() == MouseEvent.BUTTON3) {
+                        if (bigDecCheckBox.isSelected())
+                            zoomSize = new BigDecimal(zoomTextField.getText())
+                                    .multiply(new BigDecimal("4.0")).setScale(20, RoundingMode.CEILING);
+                        else
+                            zoomSize = Double.parseDouble(zoomTextField.getText()) * 4;
+                    }
 
                     infoTextArea.setText("");
                     showInfo();
@@ -160,20 +169,21 @@ public class GUIMain {
                     fr.execute();
 
                     zoomTextField.setText("" + zoomSize);
+                    centerXtextField.setText("" + center.getX());
+                    centerYtextField.setText("" + center.getY());
                 }
             }
         });
 
         DecimalFormat df = new DecimalFormat("#.####");
+        df.setRoundingMode(RoundingMode.CEILING);
         fractalLabel.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
                 super.mouseMoved(e);
                 if (e.getX() < pictureSizeX && e.getY() < pictureSizeY) {
-
-                    df.setRoundingMode(RoundingMode.CEILING);
-                    Point2D mouseRealCoord = getRealCoordinates(e.getX(), e.getY(), pictureSizeY);
-                    cordsLabel.setText("x: " + df.format(mouseRealCoord.getX()) + " y: " + df.format(mouseRealCoord.getY()));
+                    Point2D mouseRealCord = getRealCoordinates(e.getX(), e.getY(), pictureSizeY);
+                    cordsLabel.setText("x: " + df.format(mouseRealCord.getX()) + " y: " + df.format(mouseRealCord.getY()));
                     try {
                         Thread.sleep(30);
                     } catch (InterruptedException interruptedException) {
@@ -214,7 +224,6 @@ public class GUIMain {
 
     private void createUIComponents() {
         fractalLabel = new JLabel();
-        cordsLabel = new JLabel();
         zoomTextField = new JTextField();
         iterTextField = new JTextField();
         progressBar = new JProgressBar();
@@ -293,52 +302,21 @@ public class GUIMain {
         return fractalScroll;
     }
 
-    public double getZoomSize() {
+    public Object getZoomSize() {
         return zoomSize;
-    }
-
-    public void setZoomSize(double zoomSize) {
-        this.zoomSize = zoomSize;
     }
 
     public int getIteration() {
         return iteration;
     }
 
-    public void setIteration(int iteration) {
-        this.iteration = iteration;
-    }
-
     public int getPictureSizeX() {
         return pictureSizeX;
     }
 
-    public void setPictureSizeX(int pictureSizeX) {
-        this.pictureSizeX = pictureSizeX;
-    }
 
     public int getPictureSizeY() {
         return pictureSizeY;
-    }
-
-    public void setPictureSizeY(int pictureSizeY) {
-        this.pictureSizeY = pictureSizeY;
-    }
-
-    public BufferedImage getFractalBufferedImage() {
-        return fractalBufferedImage;
-    }
-
-    public ColorShifter getPl() {
-        return pl;
-    }
-
-    public GenFractal getFr() {
-        return fr;
-    }
-
-    public void setFr(GenFractal fr) {
-        this.fr = fr;
     }
 
     public JComboBox getFractalsCombo() {
