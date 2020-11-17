@@ -249,6 +249,9 @@ public class GUIMain {
         });
     }
 
+    /**
+     * criacao customizada dos componentes da GUIMain.form
+     */
     private void createUIComponents() {
         fractalLabel = new JLabel();
         zoomTextField = new JTextField();
@@ -268,7 +271,9 @@ public class GUIMain {
         progressBar.setVisible(false);
     }
 
-    // metodo para colocar os outputs das informacoes do Fratal
+    /**
+     * metodo para colocar os outputs das informacoes do Fratal
+     */
     private void showInfo() {
         // cada vez que o metodo e executado, limpamos a string "info" para colocar novas informacoes
         String info = "";
@@ -281,6 +286,12 @@ public class GUIMain {
         info += "\n\nHue Value: " +hueSlider.getValue();
         info += "\nSaturation Value: " +saturationSlider.getValue();
         info += "\nBrightness Value: " +brightnessSlider.getValue();
+        if (bigDecCheckBox.isSelected())
+            info += "\n\nBig Decimal: YES";
+        else
+            info += "\n\nBig Decimal: NO";
+        info += "\n\nCenter X: " +centerXtextField.getText();
+        info += "\nCenter Y: " +centerYtextField.getText();
 
         // inserimos o valor da variavel "info" na area de "info"
         infoTextArea.insert(info, 0);
@@ -290,7 +301,13 @@ public class GUIMain {
         return mainPanel;
     }
 
-    // metodo para receber as coordenadas reais a partir da label
+    /** metodo para receber as coordenadas reais a partir da label
+     *
+     * @param xx
+     * @param yy
+     * @param size
+     * @return as coordenadas reais
+     */
     public Point2D getRealCoordinates(double xx, double yy, int size) {
         double ws = Double.parseDouble(zoomTextField.getText());
         double pixelSize = ws / size;
@@ -301,7 +318,10 @@ public class GUIMain {
         return new Point2D.Double(x, y);
     }
 
-    // metodo para obter os valores dos sliders de HSB
+    /** metodo para obter os valores dos sliders de HSB
+     *
+     * @return os valores HSB escolhidos
+     */
     public float[] getSliderHSB() {
         return new float[]{(float) hueSlider.getValue() / 100, (float) saturationSlider.getValue() / 100, (float) brightnessSlider.getValue() / 100};
     }

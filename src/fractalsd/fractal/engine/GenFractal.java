@@ -15,7 +15,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
 /**
- * Classe que gera o fratal balanceado
+ * Classe que:
+ * - gera o fratal balanceado;
+ * - dá output da barra de progresso;
+ * - permite o nao bloqueio das interfaces do programa
  */
 public class GenFractal extends SwingWorker<BufferedImage, Integer> {
     private final Point2D center;
@@ -44,11 +47,16 @@ public class GenFractal extends SwingWorker<BufferedImage, Integer> {
         this.zoomSizeDecCount = guiMain.getZoomSizeDecCount();
     }
 
-    // metodo doInBackground() que e executado numa "background thread" e retorna o resultado requerido (neste caso a "bufferedImage")
+    /** metodo doInBackground() que e executado numa "background thread" e
+     * retorna o resultado requerido (neste caso a "bufferedImage")
+     * @return a bufferedImage
+     * @throws Exception
+     */
     @Override
     protected BufferedImage doInBackground() throws Exception {
+        // o maximo da barra de progressos e dinamicamente calculada conforme a largura da imagem fractal
         guiMain.getProgressBar().setMaximum(sizeX);
-        // obter o output pela progressBar
+        // obter o progresso pela "progressBar"
         guiMain.getProgressBar().setVisible(true);
         // nova BufferedImage com os parametros:
         //                      width = sizeX
@@ -67,10 +75,11 @@ public class GenFractal extends SwingWorker<BufferedImage, Integer> {
             exe.execute(new FractalPixels(center, zoomSize, iteration, sizeX, sizeY, bufferedImage, fractal, ticket, sliderHSB, isBigDecimal, zoomSizeDecCount));
         }
 
-
+        // para ser possivel verificar, de igual forma à imagem, a barra de progressos
         int t;
         while ((t = ticket.get()) < sizeX){
             publish(t);
+            // a cada 100 milissegundos, atualiza a progressBar
             Thread.sleep(100);
 
         }
@@ -82,12 +91,22 @@ public class GenFractal extends SwingWorker<BufferedImage, Integer> {
         return bufferedImage;
     }
 
+    /**
+     * recebe "data chunks" do método "publish" assincronamente
+     * pode ser chamado varias vezes uma vez que e invocado assincronamente
+     * @param chunks
+     */
     public void process(List<Integer> chunks) {
         guiMain.getFractalLabel().setIcon(new ImageIcon(bufferedImage));
         guiMain.getFractalScroll().setViewportView(guiMain.getFractalLabel());
         guiMain.getProgressBar().setValue(chunks.get(chunks.size() - 1));
     }
 
+    /**
+     * e chamado quando as threads terminam as suas tasks, nomeadamente quando o metodo
+     * doInBackgorund() acaba
+     * quando o objetivo de processar o fractal termina, esconde-se a "progressBar"
+     */
     public void done() {
         guiMain.getProgressBar().setVisible(false);
         guiMain.getFractalLabel().setIcon(new ImageIcon(bufferedImage));

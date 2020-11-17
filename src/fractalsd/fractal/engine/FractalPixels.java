@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 /**
  * Esta classe serve apenas para gerar os pixeis e preencher a BufferedImage
  * <p>
- * Verifica se a boolean isBigDecimal está ativa, caso sim realiza os calculos em BigDecimal
+ * Verifica se a boolean isBigDecimal está ativa, em caso afirmativo realiza os calculos em BigDecimal
  */
 public class FractalPixels extends Thread {
     private final Point2D center;
@@ -42,7 +42,7 @@ public class FractalPixels extends Thread {
         this.hueShift = getSliderHSB[0];
         this.saturationShift = getSliderHSB[1];
         this.brightnessShift = getSliderHSB[2];
-        this.zoomSizeDecCount = Math.max(zoomSizeDecCount, 5);
+        this.zoomSizeDecCount = Math.max(zoomSizeDecCount, 15);
     }
 
     @Override
@@ -71,7 +71,7 @@ public class FractalPixels extends Thread {
                 }
             }
         }
-        // caso o preocesso seja feito com valores double:
+        // caso o processo seja feito com valores double:
         else {
             for (int x = ticket.get(); x < sizeX; x = ticket.getAndIncrement()) {
                 for (int y = 0; y < sizeY; y++) {

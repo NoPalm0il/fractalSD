@@ -6,6 +6,9 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 
+/**
+ * classe do fractal Julia com c = -0.7 + 0.27015i
+ */
 public class Julia extends Fractal {
     @Override
     public int color(double re, double im, int i) {

@@ -6,6 +6,9 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 
+/**
+ * classe do fractal Burning Ship
+ */
 public class BurningShip extends Fractal {
     @Override
     public int color(double re, double im, int i) {
