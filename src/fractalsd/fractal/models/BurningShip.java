@@ -29,8 +29,7 @@ public class BurningShip extends Fractal {
     @Override
     public int color(BigDecimal re, BigDecimal im, int i, int zoomSizeDecCount) {
         MathContext mc = new MathContext(zoomSizeDecCount, RoundingMode.CEILING);
-        BigDecimal zr = BigDecimal.ZERO.setScale(zoomSizeDecCount, RoundingMode.CEILING),
-                zi = BigDecimal.ZERO.setScale(zoomSizeDecCount, RoundingMode.CEILING), nz;
+        BigDecimal zr = BigDecimal.ZERO, zi = BigDecimal.ZERO, nz;
         while (i > 0) {
             BigDecimal mul = zr.multiply(zr, mc).setScale(zoomSizeDecCount, RoundingMode.CEILING);
             BigDecimal mulzi = zi.multiply(zi, mc).setScale(zoomSizeDecCount, RoundingMode.CEILING);

@@ -30,7 +30,6 @@ public class GUIMain {
     private JTabbedPane tabbedPane1;
     private JPanel fractalTabbedPanel;
     private JPanel colorTabbedPanel;
-    private JComboBox colorComboBox;
     private JPanel mainJPanel;
     private JPanel colorJPanel;
     private JScrollPane fractalScroll;

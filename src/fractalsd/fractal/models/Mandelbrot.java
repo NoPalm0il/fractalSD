@@ -8,20 +8,24 @@ import java.math.RoundingMode;
 
 public class Mandelbrot extends Fractal {
 
+    /**
+     * Gera o numero de colisoes do fratal de Mandelbroth optimizado
+     *
+     * @param re - numero real do grafico (x)
+     * @param im - numero imaginario do grafico (y)
+     * @param i  - iteracoes
+     * @return - retorna as colisoes
+     */
     @Override
     public int color(double re, double im, int i) {
-        double zr = 0.0, zi = 0.0, nz;
-        while (i > 0) {
-            //z.modulus
-            if (zr * zr + zi * zi > 4.0) { // | z |
-                break;
-            }
-            //z = z.multiply(z); // z = z*z
-            nz = zr * zr - zi * zi + re;
-            zi = 2 * zr * zi + im;
-            zr = nz;
+        double x, x2 = 0.0, y, y2 = 0.0, w = 0.0;
+        while (i > 0 && x2 + y2 <= 4) {
+            x = x2 - y2 + re;
+            y = w - x2 - y2 + im;
+            x2 = x * x;
+            y2 = y * y;
+            w = (x + y) * (x + y);
 
-            //z = z.sum(z0); // z = z + z0
             i--;
         }
         return i;
@@ -30,23 +34,16 @@ public class Mandelbrot extends Fractal {
     @Override
     public int color(BigDecimal re, BigDecimal im, int i, int zoomSizeDecCount) {
         MathContext mc = new MathContext(zoomSizeDecCount, RoundingMode.CEILING);
-        BigDecimal zr = BigDecimal.ZERO.setScale(zoomSizeDecCount, RoundingMode.CEILING),
-                zi = BigDecimal.ZERO.setScale(zoomSizeDecCount, RoundingMode.CEILING), nz;
-        while (i > 0) {
-            BigDecimal mul = zr.multiply(zr, mc).setScale(zoomSizeDecCount, RoundingMode.CEILING);
-            if (mul
-                    .add(zi.multiply(zi, mc), mc).setScale(zoomSizeDecCount, RoundingMode.CEILING)
-                    .compareTo(new BigDecimal("4.0")) > 0)
-                break;
+        BigDecimal x, y, x2 = BigDecimal.ZERO, y2 = BigDecimal.ZERO, w = BigDecimal.ZERO;
+        BigDecimal cmp = new BigDecimal("4.0");
+        while (i > 0 && x2.add(y2, mc).compareTo(cmp) <= 0) {
+            x = x2.subtract(y2, mc).add(re, mc);
+            y = w.subtract(x2, mc).subtract(y2, mc).add(im, mc);
 
-            nz = mul
-                    .subtract(zi.multiply(zi, mc), mc).setScale(zoomSizeDecCount, RoundingMode.CEILING)
-                    .add(re, mc).setScale(zoomSizeDecCount, RoundingMode.CEILING);
+            x2 = x.multiply(x, mc);
+            y2 = y.multiply(y, mc);
+            w = x.add(y, mc).multiply(x.add(y, mc), mc);
 
-            zi = zr.multiply(zi.multiply(new BigDecimal("2.0"), mc), mc).setScale(zoomSizeDecCount, RoundingMode.CEILING)
-                    .add(im, mc).setScale(zoomSizeDecCount, RoundingMode.CEILING);
-
-            zr = nz.setScale(zoomSizeDecCount, RoundingMode.CEILING);
             i--;
         }
         return i;
