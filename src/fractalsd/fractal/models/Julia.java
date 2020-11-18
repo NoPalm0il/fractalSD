@@ -31,9 +31,15 @@ public class Julia extends Fractal {
         BigDecimal nz;
 
 
-        while (i > 0 && zr.multiply(zr,mc).add(zi.multiply(zi,mc), mc).setScale(zoomSizeDecCount, RoundingMode.CEILING).compareTo(new BigDecimal("4.0")) < 0) {
-            nz = zr.multiply(zr,mc).subtract(zi.multiply(zi,mc), mc).subtract(new BigDecimal("0.7"),mc).setScale(zoomSizeDecCount, RoundingMode.CEILING);
-            zi = zr.multiply(zi,mc).multiply(new BigDecimal("2.0"),mc).add(new BigDecimal("0.27015"),mc).setScale(zoomSizeDecCount, RoundingMode.CEILING);
+        while (i > 0 && zr.multiply(zr, mc).setScale(zoomSizeDecCount, RoundingMode.CEILING)
+                .add(zi.multiply(zi, mc).setScale(zoomSizeDecCount, RoundingMode.CEILING), mc).setScale(zoomSizeDecCount, RoundingMode.CEILING)
+                .compareTo(new BigDecimal("4.0")) < 0) {
+            nz = zr.multiply(zr, mc).setScale(zoomSizeDecCount, RoundingMode.CEILING)
+                    .subtract(zi.multiply(zi, mc).setScale(zoomSizeDecCount, RoundingMode.CEILING), mc).setScale(zoomSizeDecCount, RoundingMode.CEILING)
+                    .subtract(new BigDecimal("0.7"), mc).setScale(zoomSizeDecCount, RoundingMode.CEILING);
+            zi = zr.multiply(zi, mc).setScale(zoomSizeDecCount, RoundingMode.CEILING)
+                    .multiply(new BigDecimal("2.0"), mc).setScale(zoomSizeDecCount, RoundingMode.CEILING)
+                    .add(new BigDecimal("0.27015"), mc).setScale(zoomSizeDecCount, RoundingMode.CEILING);
             zr = nz.setScale(zoomSizeDecCount, RoundingMode.CEILING);
             i--;
         }
