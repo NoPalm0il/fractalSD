@@ -29,13 +29,21 @@ public class BurningShip extends Fractal {
         BigDecimal zr = BigDecimal.ZERO.setScale(zoomSizeDecCount, RoundingMode.CEILING),
                 zi = BigDecimal.ZERO.setScale(zoomSizeDecCount, RoundingMode.CEILING), nz;
         while (i > 0) {
-            if (zr.multiply(zr, mc).add(zi.multiply(zi, mc), mc).compareTo(new BigDecimal("4.0")) > 0) {
+            BigDecimal mul = zr.multiply(zr, mc).setScale(zoomSizeDecCount, RoundingMode.CEILING);
+            BigDecimal mulzi = zi.multiply(zi, mc).setScale(zoomSizeDecCount, RoundingMode.CEILING);
+            if (mul
+                    .add(mulzi, mc).setScale(zoomSizeDecCount, RoundingMode.CEILING)
+                    .compareTo(new BigDecimal("4.0")) > 0) {
                 break;
             }
 
-            nz = zr.multiply(zr, mc).subtract(zi.multiply(zi, mc), mc).add(re, mc);
-            zi = zi.multiply(zr, mc).multiply(new BigDecimal("2.0"), mc).abs(mc).subtract(im, mc);
-            zr = nz.abs(mc);
+            nz = mul
+                    .subtract(mulzi, mc).setScale(zoomSizeDecCount, RoundingMode.CEILING)
+                    .add(re, mc).setScale(zoomSizeDecCount, RoundingMode.CEILING);
+            zi = zi.multiply(zr, mc).setScale(zoomSizeDecCount, RoundingMode.CEILING)
+                    .multiply(new BigDecimal("2.0"), mc).setScale(zoomSizeDecCount, RoundingMode.CEILING)
+                    .abs(mc).setScale(zoomSizeDecCount, RoundingMode.CEILING).subtract(im, mc).setScale(zoomSizeDecCount, RoundingMode.CEILING);
+            zr = nz.abs(mc).setScale(zoomSizeDecCount, RoundingMode.CEILING);
             i--;
         }
         return i;

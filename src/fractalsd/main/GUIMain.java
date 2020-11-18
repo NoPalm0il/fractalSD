@@ -49,6 +49,7 @@ public class GUIMain {
     private JSlider brightnessSlider;
     private JSlider saturationSlider;
     private JSlider hueSlider;
+    private JCheckBox sequencialCheckBox;
 
     private Point2D center;
     private Object zoomSize;
@@ -84,10 +85,6 @@ public class GUIMain {
             if ((float) pictureSizeX / (float) pictureSizeY > 1.5f)
                 center = getRealCoordinates(pictureSizeX / 1.0 / pictureSizeY / 2.0, pictureSizeY / 2.0, pictureSizeY);
 
-            // limpa a area de info para colocar as informacoes atualizadas
-            infoTextArea.setText("");
-            showInfo();
-
             // gera o Fratal e executa
             fr = new GenFractal(this);
             fr.execute();
@@ -115,10 +112,6 @@ public class GUIMain {
             yTextField.setText("400");
             centerXtextField.setText("0");
             centerYtextField.setText("0");
-
-            // limpar a area de info e colocar as informacoes atualizadas
-            infoTextArea.setText("");
-            showInfo();
 
             // gerar o "novo" Fractal
             fr = new GenFractal(this);
@@ -184,14 +177,12 @@ public class GUIMain {
                             zoomSize = Double.parseDouble(zoomTextField.getText()) * 4;
                     }
 
-                    infoTextArea.setText("");
-                    showInfo();
                     fr = new GenFractal(GUIMain.this);
                     fr.execute();
 
-                    zoomTextField.setText("" + zoomSize);
-                    centerXtextField.setText("" + center.getX());
-                    centerYtextField.setText("" + center.getY());
+                    zoomTextField.setText(zoomSize.toString());
+                    centerXtextField.setText(String.valueOf(center.getX()));
+                    centerYtextField.setText(String.valueOf(center.getY()));
                 }
             }
         });
@@ -214,16 +205,6 @@ public class GUIMain {
                     }
                 }
             }
-        });
-
-        // quando se seleciona um fractal do fractalsCombo, sao selecionadas e colocadas estas opcoes nos textFields
-        fractalsCombo.addItemListener(e -> {
-            zoomTextField.setText("5");
-            iterTextField.setText("256");
-            xTextField.setText("400");
-            yTextField.setText("400");
-            centerXtextField.setText("0");
-            centerYtextField.setText("0");
         });
 
         // evento para quando se altera o "slider" do HUE
@@ -267,24 +248,6 @@ public class GUIMain {
 
         progressBar.setVisible(false);
     }
-
-    // metodo para colocar os outputs das informacoes do Fratal
-    private void showInfo() {
-        // cada vez que o metodo e executado, limpamos a string "info" para colocar novas informacoes
-        String info = "";
-
-        info += "Fractal Name: " + fractalsCombo.getSelectedItem();
-        info += "\n\nMax Iterations: " + iterTextField.getText();
-        info += "\nZoom: " + zoomTextField.getText();
-        info += "\n\nImage Width: " + xTextField.getText();
-        info += "\nImage Height: " + yTextField.getText();
-        info += "\n\nHue Value: " +hueSlider.getValue();
-        info += "\nSaturation Value: " +saturationSlider.getValue();
-        info += "\nBrightness Value: " +brightnessSlider.getValue();
-
-        // inserimos o valor da variavel "info" na area de "info"
-        infoTextArea.insert(info, 0);
-     }
 
     public JPanel getMainPanel() {
         return mainPanel;
@@ -358,5 +321,13 @@ public class GUIMain {
 
     public int getZoomSizeDecCount() {
         return zoomSizeDecCount;
+    }
+
+    public JTextArea getInfoTextArea() {
+        return infoTextArea;
+    }
+
+    public JCheckBox getSequentialCheckBox() {
+        return sequencialCheckBox;
     }
 }
