@@ -138,7 +138,11 @@ public class GenFractal extends SwingWorker<Long, Integer> {
         }
     }
 
-    // metodo para colocar os outputs das informacoes do Fratal
+    /**
+     * metodo para colocar os outputs das informacoes do Fratal
+     *
+     * @param execTimeMils - insere na info o tempo
+     */
     private void showInfo(long execTimeMils) {
         guiMain.getInfoTextArea().setText("");
         // cada vez que o metodo e executado, limpamos a string "info" para colocar novas informacoes
