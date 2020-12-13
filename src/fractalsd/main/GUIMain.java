@@ -4,6 +4,7 @@ import fractalsd.fractal.Fractal;
 import fractalsd.fractal.colors.ColorShifter;
 import fractalsd.fractal.engine.GenFractal;
 import fractalsd.fractal.models.Index;
+import fractalsd.fractal.sokets.Client;
 
 import javax.swing.*;
 import java.awt.event.*;
@@ -11,6 +12,8 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.Inet4Address;
+import java.net.Socket;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
@@ -49,6 +52,9 @@ public class GUIMain {
     private JSlider saturationSlider;
     private JSlider hueSlider;
     private JCheckBox sequencialCheckBox;
+    private JPanel serverTabbedPanel;
+    private JButton sendFractalButton;
+    private JTextField addressTextField;
 
     private Point2D center;
     private Object zoomSize;
@@ -72,10 +78,10 @@ public class GUIMain {
                 zoomSize = Double.parseDouble(zoomTextField.getText());
 
             // fractal iterations
-            iteration = Integer.parseInt(iterTextField.getText());
+            iteration = getIteration();
             // altura e largura (height and width) da imagem
-            pictureSizeX = Integer.parseInt(xTextField.getText());
-            pictureSizeY = Integer.parseInt(yTextField.getText());
+            pictureSizeX = getPictureSizeX();
+            pictureSizeY = getPictureSizeY();
 
             // centro com as informacoes dos textFields relativos ao mesmo
             center = new Point2D.Double(Double.parseDouble(centerXtextField.getText()), Double.parseDouble(centerYtextField.getText()));
@@ -227,6 +233,10 @@ public class GUIMain {
                 fractalLabel.setIcon(new ImageIcon(pl.genNewColorMap()));
             }
         });
+        sendFractalButton.addActionListener(evt -> {
+            String[] address = addressTextField.getText().split(":");
+            new Thread(new Client(address[0], Integer.parseInt(address[1]), this)).start();
+        });
     }
 
     /**
@@ -255,7 +265,8 @@ public class GUIMain {
         return mainPanel;
     }
 
-    /** metodo para receber as coordenadas reais a partir da label
+    /**
+     * metodo para receber as coordenadas reais a partir da label
      *
      * @param xx
      * @param yy
@@ -272,7 +283,8 @@ public class GUIMain {
         return new Point2D.Double(x, y);
     }
 
-    /** metodo para obter os valores dos sliders de HSB
+    /**
+     * metodo para obter os valores dos sliders de HSB
      *
      * @return os valores HSB escolhidos
      */
@@ -306,16 +318,16 @@ public class GUIMain {
     }
 
     public int getIteration() {
-        return iteration;
+        return Integer.parseInt(iterTextField.getText());
     }
 
     public int getPictureSizeX() {
-        return pictureSizeX;
+        return Integer.parseInt(xTextField.getText());
     }
 
 
     public int getPictureSizeY() {
-        return pictureSizeY;
+        return Integer.parseInt(yTextField.getText());
     }
 
     public JComboBox getFractalsCombo() {
