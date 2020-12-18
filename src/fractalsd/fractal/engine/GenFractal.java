@@ -2,7 +2,7 @@ package fractalsd.fractal.engine;
 
 import fractalsd.fractal.Fractal;
 import fractalsd.fractal.colors.ColorShifter;
-import fractalsd.main.GUIMain;
+import fractalsd.gui.GUIMain;
 
 import javax.swing.*;
 import java.awt.geom.Point2D;

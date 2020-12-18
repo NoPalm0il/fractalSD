@@ -1,26 +1,25 @@
-package fractalsd.main;
+package fractalsd.gui;
 
 import fractalsd.fractal.Fractal;
 import fractalsd.fractal.colors.ColorShifter;
 import fractalsd.fractal.engine.GenFractal;
 import fractalsd.fractal.models.Index;
 import fractalsd.fractal.sokets.Client;
+import fractalsd.fractal.sokets.Server;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.net.Inet4Address;
-import java.net.Socket;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 
 /**
  * Classe principal GUI
  */
-public class GUIMain {
+public class GUIMain implements GuiUpdate {
     private JPanel mainPanel;
     private JPanel fractalPanel;
     private JLabel fractalLabel;
@@ -52,9 +51,15 @@ public class GUIMain {
     private JSlider saturationSlider;
     private JSlider hueSlider;
     private JCheckBox sequencialCheckBox;
-    private JPanel serverTabbedPanel;
+    private JPanel clientTabbedPanel;
     private JButton sendFractalButton;
     private JTextField addressTextField;
+    private JPanel serverTabbedPanel;
+    private JTextField serverAddressTxt;
+    private JButton connectButton;
+    private JTextArea serverLogTxt;
+    private JTextArea clientLogTxt;
+    private JButton disconnectButton;
 
     private Point2D center;
     private Object zoomSize;
@@ -69,26 +74,7 @@ public class GUIMain {
     public GUIMain() {
         // botão para gerar um Fractal com os parâmetros presentes nos JTextFields
         genFractalBt.addActionListener(e -> {
-            // verifica se a CheckBox de "BigDecimal" esta selecionada
-            // caso esteja, executa os calculos com os valores BigDecimal
-            if (bigDecCheckBox.isSelected()) {
-                zoomSize = new BigDecimal(zoomTextField.getText());
-                zoomSizeDecCount = ((BigDecimal) zoomSize).scale();
-            } else
-                zoomSize = Double.parseDouble(zoomTextField.getText());
-
-            // fractal iterations
-            iteration = getIteration();
-            // altura e largura (height and width) da imagem
-            pictureSizeX = getPictureSizeX();
-            pictureSizeY = getPictureSizeY();
-
-            // centro com as informacoes dos textFields relativos ao mesmo
-            center = new Point2D.Double(Double.parseDouble(centerXtextField.getText()), Double.parseDouble(centerYtextField.getText()));
-
-
-            if ((float) pictureSizeX / (float) pictureSizeY > 1.5f)
-                center = getRealCoordinates(pictureSizeX / 1.0 / pictureSizeY / 2.0, pictureSizeY / 2.0, pictureSizeY);
+            setValues();
 
             // gera o Fratal e executa
             fr = new GenFractal(this);
@@ -97,18 +83,6 @@ public class GUIMain {
 
         // botao de RESET para voltar aos parametros iniciais
         resetBt.addActionListener(e -> {
-            // escolha dinamica para verificar se a checkBox do BigDecimal esta selecionada
-            if (bigDecCheckBox.isSelected())
-                zoomSize = new BigDecimal("5.0");
-            else
-                zoomSize = 5.0;
-            // fractal iterations
-            iteration = 256;
-            // image w and h in pixels resolution
-            pictureSizeX = 400;
-            pictureSizeY = 400;
-            center = new Point2D.Double(0, 0);
-
             // colocar as informacoes dinamicamente nos textFields para quando for
             // a geracao do Fractal, este poder ler as mesmas
             zoomTextField.setText("5");
@@ -118,12 +92,7 @@ public class GUIMain {
             centerXtextField.setText("0");
             centerYtextField.setText("0");
 
-            // gerar o "novo" Fractal
-            fr = new GenFractal(this);
-            fr.execute();
-
-            centerXtextField.setText("" + center.getX());
-            centerYtextField.setText("" + center.getY());
+            setValues();
         });
 
         // botão para a definição padrão "small" (200x200)
@@ -237,6 +206,13 @@ public class GUIMain {
             String[] address = addressTextField.getText().split(":");
             new Thread(new Client(address[0], Integer.parseInt(address[1]), this)).start();
         });
+        connectButton.addActionListener(e -> {
+            String[] add = serverAddressTxt.getText().split(":");
+            new Thread(new Server(add[0], Integer.parseInt(add[1]), this)).start();
+        });
+        disconnectButton.addActionListener(e -> {
+
+        });
     }
 
     /**
@@ -283,6 +259,29 @@ public class GUIMain {
         return new Point2D.Double(x, y);
     }
 
+    public void setValues() {
+        // verifica se a CheckBox de "BigDecimal" esta selecionada
+        // caso esteja, executa os calculos com os valores BigDecimal
+        if (bigDecCheckBox.isSelected()) {
+            zoomSize = new BigDecimal(zoomTextField.getText());
+            zoomSizeDecCount = ((BigDecimal) zoomSize).scale();
+        } else
+            zoomSize = Double.parseDouble(zoomTextField.getText());
+
+        // fractal iterations
+        iteration = getIteration();
+        // altura e largura (height and width) da imagem
+        pictureSizeX = getPictureSizeX();
+        pictureSizeY = getPictureSizeY();
+
+        // centro com as informacoes dos textFields relativos ao mesmo
+        center = new Point2D.Double(Double.parseDouble(centerXtextField.getText()), Double.parseDouble(centerYtextField.getText()));
+
+
+        if ((float) pictureSizeX / (float) pictureSizeY > 1.5f)
+            center = getRealCoordinates(pictureSizeX / 1.0 / pictureSizeY / 2.0, pictureSizeY / 2.0, pictureSizeY);
+    }
+
     /**
      * metodo para obter os valores dos sliders de HSB
      *
@@ -292,6 +291,25 @@ public class GUIMain {
         return new float[]{(float) hueSlider.getValue() / 100, (float) saturationSlider.getValue() / 100, (float) brightnessSlider.getValue() / 100};
     }
 
+    @Override
+    public void onStart() {
+
+    }
+
+    @Override
+    public void onStop() {
+
+    }
+
+    @Override
+    public void onException(String message, Exception e) {
+
+    }
+
+    @Override
+    public void onDisplay(Color color, String message) {
+
+    }
 
     public JLabel getFractalLabel() {
         return fractalLabel;
@@ -352,5 +370,17 @@ public class GUIMain {
 
     public JCheckBox getSequentialCheckBox() {
         return sequencialCheckBox;
+    }
+
+    public JTextField getZoomTextField() {
+        return zoomTextField;
+    }
+
+    public JTextField getCenterXtextField() {
+        return centerXtextField;
+    }
+
+    public JTextField getCenterYtextField() {
+        return centerYtextField;
     }
 }

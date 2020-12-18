@@ -1,5 +1,7 @@
 package fractalsd.main;
 
+import fractalsd.gui.GUIMain;
+
 import javax.swing.*;
 
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;

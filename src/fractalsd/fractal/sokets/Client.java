@@ -1,6 +1,6 @@
 package fractalsd.fractal.sokets;
 
-import fractalsd.main.GUIMain;
+import fractalsd.gui.GUIMain;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
