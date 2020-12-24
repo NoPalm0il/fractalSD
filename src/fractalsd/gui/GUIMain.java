@@ -4,17 +4,20 @@ import fractalsd.fractal.Fractal;
 import fractalsd.fractal.colors.ColorShifter;
 import fractalsd.fractal.engine.GenFractal;
 import fractalsd.fractal.models.Index;
-import fractalsd.fractal.sokets.Client;
-import fractalsd.fractal.sokets.Server;
+import fractalsd.sokets.*;
+import fractalsd.utils.GuiUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Classe principal GUI
@@ -50,15 +53,12 @@ public class GUIMain implements GuiUpdate {
     private JSlider brightnessSlider;
     private JSlider saturationSlider;
     private JSlider hueSlider;
-    private JCheckBox sequencialCheckBox;
-    private JPanel clientTabbedPanel;
-    private JButton sendFractalButton;
+    private JCheckBox sequentialCheckBox;
     private JTextField addressTextField;
     private JPanel serverTabbedPanel;
     private JTextField serverAddressTxt;
     private JButton connectButton;
-    private JTextArea serverLogTxt;
-    private JTextArea clientLogTxt;
+    private JTextPane serverLogTxt;
     private JButton disconnectButton;
 
     private Point2D center;
@@ -70,8 +70,10 @@ public class GUIMain implements GuiUpdate {
     private BufferedImage fractalBufferedImage;
     private ColorShifter pl;
     private GenFractal fr;
+    private final AtomicBoolean serverRunning;
 
     public GUIMain() {
+        serverRunning = new AtomicBoolean(false);
         // botão para gerar um Fractal com os parâmetros presentes nos JTextFields
         genFractalBt.addActionListener(e -> {
             setValues();
@@ -202,16 +204,17 @@ public class GUIMain implements GuiUpdate {
                 fractalLabel.setIcon(new ImageIcon(pl.genNewColorMap()));
             }
         });
-        sendFractalButton.addActionListener(evt -> {
-            String[] address = addressTextField.getText().split(":");
-            new Thread(new Client(address[0], Integer.parseInt(address[1]), this)).start();
-        });
+
         connectButton.addActionListener(e -> {
             String[] add = serverAddressTxt.getText().split(":");
+            connectButton.setEnabled(false);
+            onStart();
             new Thread(new Server(add[0], Integer.parseInt(add[1]), this)).start();
         });
-        disconnectButton.addActionListener(e -> {
 
+        disconnectButton.addActionListener(e -> {
+            disconnectButton.setEnabled(false);
+            onStop();
         });
     }
 
@@ -291,24 +294,29 @@ public class GUIMain implements GuiUpdate {
         return new float[]{(float) hueSlider.getValue() / 100, (float) saturationSlider.getValue() / 100, (float) brightnessSlider.getValue() / 100};
     }
 
+    // TODO: Mudar isto para classes anonimas, para o server e para o cliente
     @Override
     public void onStart() {
-
+        serverRunning.set(true);
+        connectButton.setEnabled(false);
+        disconnectButton.setEnabled(true);
     }
 
     @Override
     public void onStop() {
-
+        serverRunning.set(false);
+        disconnectButton.setEnabled(false);
+        connectButton.setEnabled(true);
     }
 
     @Override
     public void onException(String message, Exception e) {
-
+        GuiUtils.addException(serverLogTxt, message, e);
     }
 
     @Override
     public void onDisplay(Color color, String message) {
-
+        GuiUtils.addText(serverLogTxt, message, color);
     }
 
     public JLabel getFractalLabel() {
@@ -369,7 +377,7 @@ public class GUIMain implements GuiUpdate {
     }
 
     public JCheckBox getSequentialCheckBox() {
-        return sequencialCheckBox;
+        return sequentialCheckBox;
     }
 
     public JTextField getZoomTextField() {
@@ -382,5 +390,9 @@ public class GUIMain implements GuiUpdate {
 
     public JTextField getCenterYtextField() {
         return centerYtextField;
+    }
+
+    public AtomicBoolean getServerRunning() {
+        return serverRunning;
     }
 }

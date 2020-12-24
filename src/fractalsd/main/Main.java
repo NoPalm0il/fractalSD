@@ -16,7 +16,7 @@ public class Main {
         JFrame frame = new JFrame("Fractal SD");
         frame.setContentPane(new GUIMain().getMainPanel());
         frame.setBounds(180, 40, 1200, 680);
-        frame.setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
+        //frame.setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
         frame.setVisible(true);
     }

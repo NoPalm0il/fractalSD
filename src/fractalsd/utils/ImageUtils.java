@@ -1,8 +1,12 @@
 package fractalsd.utils;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
-public class ColorUtils {
+public class ImageUtils {
 
     public static int[][] imageToColorArray(BufferedImage image) {
         int[][] buffer = new int[image.getHeight()][image.getWidth()];
@@ -22,5 +26,16 @@ public class ColorUtils {
             }
         }
         return image;
+    }
+
+    public static byte[] imageToByteArray(BufferedImage image) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(image, "jpg", baos);
+        baos.flush();
+        return  baos.toByteArray();
+    }
+
+    public static BufferedImage byteArrayToImage(byte[] data) throws IOException {
+        return ImageIO.read(new ByteArrayInputStream(data));
     }
 }
