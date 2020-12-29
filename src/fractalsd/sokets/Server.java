@@ -1,6 +1,7 @@
 package fractalsd.sokets;
 
 import fractalsd.fractal.engine.FractalPixels;
+import fractalsd.fractal.engine.FractalPixelsServer;
 import fractalsd.fractal.models.Mandelbrot;
 import fractalsd.gui.GUIMain;
 import fractalsd.utils.*;
@@ -46,17 +47,19 @@ public class Server extends SwingWorker<Long, Integer> {
                 int iterations = Integer.parseInt(fractalParams[3]);
                 int dimX = Integer.parseInt(fractalParams[4]);
                 int dimY = Integer.parseInt(fractalParams[5]);
+                int start = Integer.parseInt(fractalParams[6]);
+                int end = Integer.parseInt(fractalParams[7]);
 
                 BufferedImage bufferedImage = new BufferedImage(dimX, dimY, BufferedImage.TYPE_INT_RGB);
 
-                AtomicInteger ticket = new AtomicInteger();
+                AtomicInteger ticket = new AtomicInteger(start);
                 // e criada uma thread pool com "nCores" threads
-                // int nCores = Runtime.getRuntime().availableProcessors();
-                // ExecutorService exe = Executors.newFixedThreadPool(guiMain.getSequentialCheckBox().isSelected() ? 1 : nCores);
-                ExecutorService exe = Executors.newFixedThreadPool(1);
+                int nCores = Runtime.getRuntime().availableProcessors();
+                ExecutorService exe = Executors.newFixedThreadPool(guiMain.getSequentialCheckBox().isSelected() ? 1 : nCores);
+                // ExecutorService exe = Executors.newFixedThreadPool(1);
 
                 for (int i = 0; i < 1; i++) {
-                    exe.execute(new FractalPixels(
+                    exe.execute(new FractalPixelsServer(
                             center,
                             zoom,
                             iterations,
@@ -65,9 +68,7 @@ public class Server extends SwingWorker<Long, Integer> {
                             bufferedImage,
                             new Mandelbrot(),
                             ticket,
-                            guiMain.getSliderHSB(),
-                            /*guiMain.getBigDecCheckBox().isSelected()*/ false,
-                            guiMain.getZoomSizeDecCount()));
+                            end));
                 }
 
                 // obriga o ExecutorService a nao aceitar mais tasks novas e espera que as threads acabem o processo para poder terminar

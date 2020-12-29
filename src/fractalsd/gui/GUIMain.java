@@ -209,7 +209,7 @@ public class GUIMain implements GuiUpdate {
             String[] add = serverAddressTxt.getText().split(":");
             connectButton.setEnabled(false);
             onStart();
-            new Thread(new Server(add[0], Integer.parseInt(add[1]), this)).start();
+            new Server(add[0], Integer.parseInt(add[1]), this).execute();
         });
 
         disconnectButton.addActionListener(e -> {

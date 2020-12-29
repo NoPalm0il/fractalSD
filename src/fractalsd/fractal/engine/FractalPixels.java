@@ -16,13 +16,13 @@ import java.math.BigDecimal;
  * Verifica se a boolean isBigDecimal está ativa, em caso afirmativo realiza os calculos em BigDecimal
  */
 public class FractalPixels extends Thread {
-    private final Point2D center;
-    private final Object zoomSize;
-    private final int iteration;
-    private final int sizeX, sizeY;
-    private final boolean isBigDecimal;
-    private final float hueShift, saturationShift, brightnessShift;
-    private final int zoomSizeDecCount;
+    protected final Point2D center;
+    protected final Object zoomSize;
+    protected final int iteration;
+    protected final int sizeX, sizeY;
+    protected final boolean isBigDecimal;
+    protected final float hueShift, saturationShift, brightnessShift;
+    protected final int zoomSizeDecCount;
 
     BufferedImage imgBuffer;
     Fractal fractal;
