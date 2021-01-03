@@ -5,7 +5,6 @@ import fractalsd.fractal.Fractal;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.math.BigDecimal;

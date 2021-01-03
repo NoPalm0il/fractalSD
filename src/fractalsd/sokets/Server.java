@@ -1,8 +1,7 @@
 package fractalsd.sokets;
 
-import fractalsd.fractal.engine.FractalPixels;
+import fractalsd.fractal.Fractal;
 import fractalsd.fractal.engine.FractalPixelsServer;
-import fractalsd.fractal.models.Mandelbrot;
 import fractalsd.gui.GUIMain;
 import fractalsd.utils.*;
 
@@ -34,6 +33,7 @@ public class Server extends SwingWorker<Long, Integer> {
         try {
             while (guiMain.getServerRunning().get()) {
                 balcSocket = new Socket(ip, port);
+                guiMain.onDisplay(Color.GREEN, "Connected to balancer");
 
                 DataOutputStream balcDos = new DataOutputStream(balcSocket.getOutputStream());
                 DataInputStream balcDis = new DataInputStream(balcSocket.getInputStream());
@@ -41,6 +41,7 @@ public class Server extends SwingWorker<Long, Integer> {
                 balcDos.writeChar('s');
 
                 String[] fractalParams = balcDis.readUTF().split(" ");
+                guiMain.onDisplay(Color.GREEN, "Received params");
 
                 Point2D center = new Point2D.Double(Double.parseDouble(fractalParams[0]), Double.parseDouble(fractalParams[1]));
                 double zoom = Double.parseDouble(fractalParams[2]);
@@ -50,7 +51,7 @@ public class Server extends SwingWorker<Long, Integer> {
                 int start = Integer.parseInt(fractalParams[6]);
                 int end = Integer.parseInt(fractalParams[7]);
 
-                BufferedImage bufferedImage = new BufferedImage(dimX, dimY, BufferedImage.TYPE_INT_RGB);
+                BufferedImage bufferedImage = new BufferedImage(end - start, dimY, BufferedImage.TYPE_INT_RGB);
 
                 AtomicInteger ticket = new AtomicInteger(start);
                 // e criada uma thread pool com "nCores" threads
@@ -66,7 +67,7 @@ public class Server extends SwingWorker<Long, Integer> {
                             dimX,
                             dimY,
                             bufferedImage,
-                            new Mandelbrot(),
+                            (Fractal) guiMain.getFractalsCombo().getSelectedItem(),
                             ticket,
                             end));
                 }
@@ -79,13 +80,15 @@ public class Server extends SwingWorker<Long, Integer> {
                 byte[] buffer = ImageUtils.imageToByteArray(bufferedImage);
                 balcDos.write(buffer);
                 balcSocket.close();
+                guiMain.onDisplay(Color.GREEN, "Sent " + buffer.length + " bytes");
             }
             balcSocket.close();
         } catch (IOException | InterruptedException io) {
-            io.printStackTrace();
+            guiMain.onException("", io);
             guiMain.onStop();
         }
         guiMain.onStop();
+        guiMain.onDisplay(Color.RED, "Disconnected");
         return null;
     }
 }

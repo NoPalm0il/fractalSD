@@ -7,7 +7,7 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class FractalPixelsServer extends FractalPixels{
+public class FractalPixelsServer extends FractalPixels {
 
     private final int max;
 
@@ -17,7 +17,7 @@ public class FractalPixelsServer extends FractalPixels{
     }
 
     @Override
-    public void run(){
+    public void run() {
         for (int x = ticket.get(); x < max; x = ticket.getAndIncrement()) {
             for (int y = 0; y < sizeY; y++) {
                 // convert pixel cords to real world
