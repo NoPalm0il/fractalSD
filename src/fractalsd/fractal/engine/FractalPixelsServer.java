@@ -16,6 +16,7 @@ public class FractalPixelsServer extends FractalPixels {
         this.max = max;
     }
 
+    // TODO: atencao ao x e y
     @Override
     public void run() {
         for (int x = ticket.get(); x < max; x = ticket.getAndIncrement()) {
